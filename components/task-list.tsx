@@ -9,6 +9,12 @@ import { TaskForm } from "@/components/task-form";
 import { Plus, Search, Filter, ListTodo } from "lucide-react";
 import { Priority } from "@prisma/client";
 
+interface Member {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface Task {
   id: string;
   title: string;
@@ -18,6 +24,8 @@ interface Task {
   completed: boolean;
   createdAt: Date;
   updatedAt: Date;
+  memberId?: string | null;
+  member?: Member | null;
 }
 
 interface TaskListProps {

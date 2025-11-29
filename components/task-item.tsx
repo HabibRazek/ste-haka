@@ -23,6 +23,7 @@ interface Task {
   dueDate: Date | null;
   completed: boolean;
   createdAt: Date;
+  updatedAt: Date;
   memberId?: string | null;
   member?: Member | null;
 }

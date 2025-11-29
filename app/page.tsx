@@ -9,6 +9,25 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTaskStats, getTasks } from "@/lib/actions/tasks";
 import { Badge } from "@/components/ui/badge";
+import { Priority } from "@prisma/client";
+
+interface Task {
+  id: string;
+  title: string;
+  description: string | null;
+  completed: boolean;
+  priority: Priority;
+  dueDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  memberId: string | null;
+  member: {
+    id: string;
+    name: string;
+    email: string;
+    role: string | null;
+  } | null;
+}
 
 export default async function Dashboard() {
   const [statsResult, tasksResult] = await Promise.all([
@@ -20,7 +39,7 @@ export default async function Dashboard() {
   const tasks = tasksResult.success ? tasksResult.data : [];
 
   // Get recent tasks (last 5)
-  const recentTasks = tasks?.slice(0, 5) || [];
+  const recentTasks: Task[] = tasks?.slice(0, 5) || [];
 
   return (
     <div className="space-y-8">
