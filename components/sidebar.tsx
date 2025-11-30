@@ -12,6 +12,7 @@ import {
   X,
   Package,
   ShoppingBag,
+  Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,11 @@ const navItems = [
     title: "Produits",
     href: "/produits",
     icon: ShoppingBag,
+  },
+  {
+    title: "Impression",
+    href: "/impression",
+    icon: Printer,
   },
   {
     title: "Tâches",

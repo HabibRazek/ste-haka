@@ -68,3 +68,19 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// PrintJob model for printing service (Service d'Impression)
+model PrintJob {
+  id            String   @id @default(cuid())
+  client        String   // Client name
+  description   String?  // Description of the job
+  largeur       Float    // Width in cm
+  hauteur       Float    // Height in cm
+  quantite      Int      @default(1) // Number of labels
+  surfaceUnitM2 Float    // Surface per unit in m²
+  surfaceTotalM2 Float   // Total surface in m²
+  prixUnitaire  Float    @default(24) // Price per m² (default 24 TND)
+  prixTotal     Float    // Total price
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
