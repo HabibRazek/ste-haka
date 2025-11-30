@@ -24,29 +24,29 @@ export function KpiCard({
   const data = chartData.map((v, i) => ({ value: v, index: i }));
 
   return (
-    <div className="bg-white rounded-lg p-4 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3 min-w-0">
+    <div className="bg-white rounded-lg p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <div
-          className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
+          className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0"
           style={{ backgroundColor: `${chartColor}15` }}
         >
-          {icon}
+          <div className="scale-75 sm:scale-100">{icon}</div>
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground font-medium truncate">{title}</p>
-          <p className="text-xl font-bold truncate" style={{ color: chartColor }}>
+          <p className="text-[10px] sm:text-xs text-muted-foreground font-medium truncate">{title}</p>
+          <p className="text-sm sm:text-xl font-bold truncate" style={{ color: chartColor }}>
             {value}
           </p>
           {trend !== undefined && (
-            <p className={`text-xs ${trend >= 0 ? "text-green-600" : "text-red-500"}`}>
+            <p className={`text-[10px] sm:text-xs ${trend >= 0 ? "text-green-600" : "text-red-500"}`}>
               {trend >= 0 ? "+" : ""}{trend}%
             </p>
           )}
         </div>
       </div>
-      
+
       {data.length > 0 && (
-        <div className="w-20 h-10 shrink-0">
+        <div className="w-12 h-8 sm:w-20 sm:h-10 shrink-0 hidden xs:block sm:block">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>

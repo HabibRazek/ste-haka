@@ -153,35 +153,35 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestion des Produits</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Gestion des Produits</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Gérez votre catalogue de produits et votre inventaire.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={exportToExcel}>
+          <Button variant="outline" onClick={exportToExcel} size="sm" className="text-xs sm:text-sm">
             <Image
               src="/Microsoft_Office_Excel.svg"
               alt="Excel"
-              width={18}
-              height={18}
-              className="mr-2"
+              width={16}
+              height={16}
+              className="mr-1 sm:mr-2"
             />
-            Exporter Excel
+            <span className="hidden sm:inline">Exporter</span> Excel
           </Button>
-          <Button onClick={() => setIsFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau produit
+          <Button onClick={() => setIsFormOpen(true)} size="sm" className="text-xs sm:text-sm">
+            <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Nouveau</span> Produit
           </Button>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Total Produits"
           value={stats.totalProducts}
@@ -230,9 +230,9 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
           <p className="text-sm text-muted-foreground">Ajoutez votre premier produit pour commencer.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg">
+        <div className="bg-white rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Image</th>

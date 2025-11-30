@@ -84,9 +84,9 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg">
+    <div className="bg-white rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[800px]">
           <thead>
             <tr className="border-b border-gray-100">
               <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>

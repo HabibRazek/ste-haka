@@ -143,35 +143,35 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestion & Suivi des Colis</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Gestion & Suivi des Colis</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Suivez vos commandes et analysez vos marges.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={exportToExcel}>
+          <Button variant="outline" onClick={exportToExcel} size="sm" className="text-xs sm:text-sm">
             <Image
               src="/Microsoft_Office_Excel.svg"
               alt="Excel"
-              width={18}
-              height={18}
-              className="mr-2"
+              width={16}
+              height={16}
+              className="mr-1 sm:mr-2"
             />
-            Exporter Excel
+            <span className="hidden sm:inline">Exporter</span> Excel
           </Button>
-          <Button onClick={() => setIsFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouvelle commande
+          <Button onClick={() => setIsFormOpen(true)} size="sm" className="text-xs sm:text-sm">
+            <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Nouvelle</span> Commande
           </Button>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard
           title="Total Commandes"
           value={stats?.totalOrders || 0}
