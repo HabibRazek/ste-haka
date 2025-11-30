@@ -145,14 +145,14 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Gestion & Suivi des Colis</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Suivez vos commandes et analysez vos marges.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Button variant="outline" onClick={exportToExcel} size="sm" className="text-xs sm:text-sm">
             <Image
               src="/Microsoft_Office_Excel.svg"
@@ -175,35 +175,30 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
         <KpiCard
           title="Total Commandes"
           value={stats?.totalOrders || 0}
-          icon={<Package className="h-5 w-5" style={{ color: "#84cc16" }} />}
-          chartColor="#84cc16"
+          icon={<Package className="h-5 w-5" />}
         />
         <KpiCard
           title="Total Ventes"
           value={`${formatNumber(stats?.totalVente || 0)} TND`}
-          icon={<ShoppingCart className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<ShoppingCart className="h-5 w-5" />}
           chartData={stats?.ventesData}
-          chartColor="#84cc16"
         />
         <KpiCard
           title="Total Achats"
           value={`${formatNumber(stats?.totalAchat || 0)} TND`}
-          icon={<DollarSign className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<DollarSign className="h-5 w-5" />}
           chartData={stats?.achatsData}
-          chartColor="#84cc16"
         />
         <KpiCard
           title="Marge Totale"
           value={`${formatNumber(stats?.totalMarge || 0)} TND`}
-          icon={<TrendingUp className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<TrendingUp className="h-5 w-5" />}
           chartData={stats?.margesData}
-          chartColor="#84cc16"
         />
         <KpiCard
           title="% Marge Moyenne"
           value={`${stats?.pourcentageMarge || 0}%`}
-          icon={<Percent className="h-5 w-5" style={{ color: "#84cc16" }} />}
-          chartColor="#84cc16"
+          icon={<Percent className="h-5 w-5" />}
         />
       </div>
 

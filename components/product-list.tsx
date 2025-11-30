@@ -155,14 +155,14 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Gestion des Produits</h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Gérez votre catalogue de produits et votre inventaire.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Button variant="outline" onClick={exportToExcel} size="sm" className="text-xs sm:text-sm">
             <Image
               src="/Microsoft_Office_Excel.svg"
@@ -185,29 +185,25 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
         <KpiCard
           title="Total Produits"
           value={stats.totalProducts}
-          icon={<Package className="h-5 w-5" style={{ color: "#84cc16" }} />}
-          chartColor="#84cc16"
+          icon={<Package className="h-5 w-5" />}
         />
         <KpiCard
           title="Stock Total"
           value={formatNumber(stats.totalStock)}
-          icon={<Boxes className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<Boxes className="h-5 w-5" />}
           chartData={stats.stockData}
-          chartColor="#84cc16"
         />
         <KpiCard
           title="Valeur du Stock"
           value={`${formatNumber(stats.totalValeurStock)} TND`}
-          icon={<DollarSign className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<DollarSign className="h-5 w-5" />}
           chartData={stats.valeurData}
-          chartColor="#84cc16"
         />
         <KpiCard
           title="Marge Potentielle"
           value={`${formatNumber(stats.totalMarge)} TND`}
-          icon={<TrendingUp className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          icon={<TrendingUp className="h-5 w-5" />}
           chartData={stats.margeData}
-          chartColor="#84cc16"
         />
       </div>
 

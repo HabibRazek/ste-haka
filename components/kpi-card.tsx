@@ -18,23 +18,22 @@ export function KpiCard({
   icon,
   trend,
   chartData = [],
-  chartColor = "#3b82f6",
+  chartColor = "#6b7280",
 }: KpiCardProps) {
   // Convert chartData array to recharts format
   const data = chartData.map((v, i) => ({ value: v, index: i }));
 
   return (
-    <div className="bg-white rounded-lg p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4">
+    <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <div
-          className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${chartColor}15` }}
+          className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0 bg-gray-50"
         >
-          <div className="scale-75 sm:scale-100">{icon}</div>
+          <div className="scale-75 sm:scale-100 text-gray-600">{icon}</div>
         </div>
         <div className="min-w-0">
           <p className="text-[10px] sm:text-xs text-muted-foreground font-medium truncate">{title}</p>
-          <p className="text-sm sm:text-xl font-bold truncate" style={{ color: chartColor }}>
+          <p className="text-sm sm:text-xl font-bold truncate text-gray-900">
             {value}
           </p>
           {trend !== undefined && (
