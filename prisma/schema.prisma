@@ -54,3 +54,17 @@ model Order {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+// Product model for inventory management
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  contenance  String?  // Size/capacity e.g. "1 L", "0,75 cl"
+  images      String[] // Array of image URLs from UploadThing
+  prixAchat   Float    // Purchase price
+  prixVente   Float    // Selling price
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

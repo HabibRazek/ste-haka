@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Loader2, Package } from "lucide-react";
+import { Pencil, Trash2, Loader2, Package, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { deleteOrder, OrderWithCalculations } from "@/lib/actions/orders";
 
 interface OrderTableProps {
@@ -13,6 +13,19 @@ interface OrderTableProps {
 
 export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
+
+  // Reset to page 1 when orders change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [orders.length]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(orders.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedOrders = orders.slice(startIndex, endIndex);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette commande?")) return;
@@ -71,81 +84,66 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   }
 
   return (
-    <div className="rounded-xl border border-border overflow-hidden bg-white">
+    <div className="bg-white rounded-lg">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-black text-white">
-              <th className="px-4 py-3 text-left font-semibold">DATE</th>
-              <th className="px-4 py-3 text-left font-semibold">DÉSIGNATION</th>
-              <th className="px-4 py-3 text-left font-semibold">CLIENT</th>
-              <th className="px-4 py-3 text-left font-semibold">ADRESSE</th>
-              <th className="px-4 py-3 text-left font-semibold">TÉLÉPHONE</th>
-              <th className="px-4 py-3 text-right font-semibold">PRIX/VENTE</th>
-              <th className="px-4 py-3 text-right font-semibold">PRIX/ACHAT</th>
-              <th className="px-4 py-3 text-right font-semibold">MARGE</th>
-              <th className="px-4 py-3 text-right font-semibold">% MARGE</th>
-              <th className="px-4 py-3 text-center font-semibold">ACTIONS</th>
+            <tr className="border-b border-gray-100">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Désignation</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Client</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Adresse</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">Téléphone</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">Prix Vente</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">Prix Achat</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Marge</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {orders.map((order, index) => (
-              <tr 
-                key={order.id} 
-                className={`hover:bg-accent/30 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
+          <tbody>
+            {paginatedOrders.map((order) => (
+              <tr
+                key={order.id}
+                className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
               >
-                <td className="px-4 py-3 whitespace-nowrap">{formatDate(order.date)}</td>
+                <td className="px-4 py-3 text-gray-600">{formatDate(order.date)}</td>
                 <td className="px-4 py-3 max-w-[200px]">
-                  <span className="line-clamp-2">{order.designation}</span>
+                  <span className="line-clamp-2 text-gray-900">{order.designation}</span>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap font-medium">{order.client}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">{order.client}</td>
                 <td className="px-4 py-3 max-w-[150px]">
-                  <span className="line-clamp-2 text-muted-foreground">{order.adresse}</span>
+                  <span className="line-clamp-2 text-gray-500">{order.adresse}</span>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{order.telephone}</td>
-                <td className="px-4 py-3 text-right whitespace-nowrap font-medium">
+                <td className="px-4 py-3 text-gray-500">{order.telephone}</td>
+                <td className="px-4 py-3 text-right text-gray-900">
                   {formatNumber(order.prixVente)}
                 </td>
-                <td className="px-4 py-3 text-right whitespace-nowrap text-muted-foreground">
+                <td className="px-4 py-3 text-right text-gray-500">
                   {formatNumber(order.prixAchat)}
                 </td>
-                <td className="px-4 py-3 text-right whitespace-nowrap font-semibold text-green-600">
-                  {formatNumber(order.marge)}
-                </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    order.pourcentageMarge >= 30 
-                      ? "bg-green-100 text-green-700" 
-                      : order.pourcentageMarge >= 15 
-                      ? "bg-yellow-100 text-yellow-700" 
-                      : "bg-red-100 text-red-700"
-                  }`}>
-                    {order.pourcentageMarge}%
-                  </span>
+                  <span className="text-green-600 font-medium">{formatNumber(order.marge)}</span>
+                  <span className="text-xs text-muted-foreground ml-1">({order.pourcentageMarge}%)</span>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                  <div className="flex items-center justify-end gap-1">
+                    <button
                       onClick={() => onEdit(order)}
-                      className="h-8 w-8 hover:bg-accent"
+                      className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    </button>
+                    <button
                       onClick={() => handleDelete(order.id)}
                       disabled={deletingId === order.id}
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
+                      className="p-1.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                     >
                       {deletingId === order.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Trash2 className="h-4 w-4" />
                       )}
-                    </Button>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -153,16 +151,84 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
           </tbody>
           {/* Totals Footer */}
           <tfoot>
-            <tr className="bg-black text-white font-bold">
-              <td colSpan={5} className="px-4 py-3 text-center text-lg">TOTAL</td>
-              <td className="px-4 py-3 text-right text-lg">{formatNumber(totals.prixVente)}</td>
-              <td className="px-4 py-3 text-right text-lg">{formatNumber(totals.prixAchat)}</td>
-              <td className="px-4 py-3 text-right text-lg">{formatNumber(totals.marge)}</td>
-              <td className="px-4 py-3 text-right text-lg">{avgMarge}%</td>
+            <tr className="border-t-2 border-gray-200 bg-gray-50/50">
+              <td colSpan={5} className="px-4 py-3 text-right font-semibold text-gray-700">Total</td>
+              <td className="px-4 py-3 text-right font-semibold text-gray-900">{formatNumber(totals.prixVente)}</td>
+              <td className="px-4 py-3 text-right font-semibold text-gray-500">{formatNumber(totals.prixAchat)}</td>
+              <td className="px-4 py-3 text-right whitespace-nowrap">
+                <span className="font-semibold text-green-600">{formatNumber(totals.marge)}</span>
+                <span className="text-xs text-muted-foreground ml-1">({avgMarge}%)</span>
+              </td>
               <td></td>
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-t border-border bg-gray-50/50">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="whitespace-nowrap">Afficher</span>
+          <select
+            value={pageSize.toString()}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="h-8 px-2 rounded-md border border-input bg-background text-sm"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <span className="whitespace-nowrap">par page</span>
+          <span className="ml-2 whitespace-nowrap">
+            {startIndex + 1}-{Math.min(endIndex, orders.length)} sur {orders.length} commandes
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="px-3 text-sm text-muted-foreground">
+            Page {currentPage} / {totalPages || 1}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage >= totalPages}
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

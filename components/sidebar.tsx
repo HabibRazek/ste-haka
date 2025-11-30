@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   Package,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,11 @@ const navItems = [
     title: "Commandes",
     href: "/commandes",
     icon: Package,
+  },
+  {
+    title: "Produits",
+    href: "/produits",
+    icon: ShoppingBag,
   },
   {
     title: "Tâches",

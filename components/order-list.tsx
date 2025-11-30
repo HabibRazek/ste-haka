@@ -3,20 +3,20 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Plus, 
-  Search, 
-  Download, 
-  TrendingUp, 
-  DollarSign, 
-  ShoppingCart, 
+import {
+  Plus,
+  Search,
+  TrendingUp,
+  DollarSign,
+  ShoppingCart,
   Percent,
   Package
 } from "lucide-react";
+import Image from "next/image";
 import { OrderForm } from "./order-form";
 import { OrderTable } from "./order-table";
 import { OrderWithCalculations } from "@/lib/actions/orders";
+import { KpiCard } from "./kpi-card";
 
 interface OrderListProps {
   orders: OrderWithCalculations[];
@@ -34,12 +34,22 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
     const totalAchat = orders.reduce((sum, o) => sum + o.prixAchat, 0);
     const totalMarge = totalVente - totalAchat;
     const pourcentageMarge = totalVente > 0 ? Math.round((totalMarge / totalVente) * 100) : 0;
+
+    // Generate sparkline data from last 7 orders (or less)
+    const recentOrders = orders.slice(0, 7).reverse();
+    const ventesData = recentOrders.map(o => o.prixVente);
+    const achatsData = recentOrders.map(o => o.prixAchat);
+    const margesData = recentOrders.map(o => o.marge);
+
     return {
       totalOrders: orders.length,
       totalVente,
       totalAchat,
       totalMarge,
       pourcentageMarge,
+      ventesData,
+      achatsData,
+      margesData,
     };
   }, [orders]);
 
@@ -144,7 +154,13 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportToExcel}>
-            <Download className="h-4 w-4 mr-2" />
+            <Image
+              src="/Microsoft_Office_Excel.svg"
+              alt="Excel"
+              width={18}
+              height={18}
+              className="mr-2"
+            />
             Exporter Excel
           </Button>
           <Button onClick={() => setIsFormOpen(true)}>
@@ -155,66 +171,40 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Commandes</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Package className="h-4 w-4 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats?.totalOrders || 0}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-green-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Ventes</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-              <ShoppingCart className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatNumber(stats?.totalVente || 0)} TND</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Achats</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
-              <DollarSign className="h-4 w-4 text-orange-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{formatNumber(stats?.totalAchat || 0)} TND</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Marge Totale</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{formatNumber(stats?.totalMarge || 0)} TND</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/5 to-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">% Marge Moyenne</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Percent className="h-4 w-4 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-primary">{stats?.pourcentageMarge || 0}%</div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+        <KpiCard
+          title="Total Commandes"
+          value={stats?.totalOrders || 0}
+          icon={<Package className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          chartColor="#84cc16"
+        />
+        <KpiCard
+          title="Total Ventes"
+          value={`${formatNumber(stats?.totalVente || 0)} TND`}
+          icon={<ShoppingCart className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          chartData={stats?.ventesData}
+          chartColor="#84cc16"
+        />
+        <KpiCard
+          title="Total Achats"
+          value={`${formatNumber(stats?.totalAchat || 0)} TND`}
+          icon={<DollarSign className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          chartData={stats?.achatsData}
+          chartColor="#84cc16"
+        />
+        <KpiCard
+          title="Marge Totale"
+          value={`${formatNumber(stats?.totalMarge || 0)} TND`}
+          icon={<TrendingUp className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          chartData={stats?.margesData}
+          chartColor="#84cc16"
+        />
+        <KpiCard
+          title="% Marge Moyenne"
+          value={`${stats?.pourcentageMarge || 0}%`}
+          icon={<Percent className="h-5 w-5" style={{ color: "#84cc16" }} />}
+          chartColor="#84cc16"
+        />
       </div>
 
       {/* Search */}
