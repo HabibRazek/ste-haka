@@ -124,3 +124,37 @@ enum InvoiceStatus {
   PAID
   CANCELLED
 }
+
+// Facture model
+model Facture {
+  id             String        @id @default(cuid())
+  numero         String        @unique // Facture number e.g. "FAC-202501261125"
+  date           DateTime      @default(now())
+  // Client info
+  clientName     String        // Company name
+  clientTel      String?       // Phone
+  clientEmail    String?       // Email
+  clientAddress  String?       // Address
+  // Totals
+  sousTotal      Float         // Subtotal
+  timbre         Float         @default(0) // Stamp tax
+  total          Float         // Total amount
+  // Status
+  status         InvoiceStatus @default(PENDING)
+  // Relations
+  items          FactureItem[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model FactureItem {
+  id          String   @id @default(cuid())
+  designation String   // Product/service description
+  quantite    Float    // Quantity
+  prixUnit    Float    // Unit price
+  total       Float    // Line total (quantite * prixUnit)
+  factureId   String
+  facture     Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
