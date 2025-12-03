@@ -7,6 +7,7 @@ import {
   View,
   StyleSheet,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 
 // Register fonts (optional - for better French character support)
@@ -28,6 +29,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     marginBottom: 30,
+    alignItems: "flex-start",
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginRight: 15,
   },
   companyInfo: {
     flex: 1,
@@ -178,23 +185,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#000",
   },
-  stampBox: {
-    borderWidth: 2,
-    borderColor: "#000",
-    borderRadius: 4,
-    padding: 15,
+  signatureImage: {
+    width: 150,
+    height: 100,
+  },
+  signaturePlaceholder: {
+    width: 150,
+    height: 80,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderStyle: "dashed",
     alignItems: "center",
-    width: 200,
+    justifyContent: "center",
   },
-  stampText: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#000",
-  },
-  stampDetail: {
+  signaturePlaceholderText: {
     fontSize: 8,
-    color: "#333",
-    marginTop: 2,
+    color: "#999",
   },
   // Footer
   footer: {
@@ -298,6 +304,7 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
+          <Image style={styles.logo} src="/logo-ste-haka.png" />
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>STE HAKA IMPORT-EXPORT</Text>
             <Text style={styles.companyDetail}>Adresse: Rue Imam Souhnoune, Sidi Achour Nabeul-8000</Text>
@@ -401,12 +408,7 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
         {/* Signature */}
         <View style={styles.signatureSection}>
           <Text style={styles.signatureTitle}>Signature et Cachet de la Société</Text>
-          <View style={styles.stampBox}>
-            <Text style={styles.stampText}>Sté HAKA IMP . EXP</Text>
-            <Text style={styles.stampDetail}>Comm, tous type d&apos;emballage</Text>
-            <Text style={styles.stampDetail}>Rue Imam Souhnoune Sidi Achour Nabeul</Text>
-            <Text style={styles.stampDetail}>MF: 1944751Q/N/M/000</Text>
-          </View>
+          <Image style={styles.signatureImage} src="/signature-stamp.png" />
         </View>
 
         {/* Footer */}
