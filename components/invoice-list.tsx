@@ -55,12 +55,20 @@ type Stats = {
   paidCount: number;
 } | null;
 
+type Product = {
+  id: string;
+  name: string;
+  contenance: string | null;
+  prixVente: number;
+};
+
 interface InvoiceListProps {
   initialInvoices: Invoice[];
   initialStats: Stats;
+  products: Product[];
 }
 
-export function InvoiceList({ initialInvoices, initialStats }: InvoiceListProps) {
+export function InvoiceList({ initialInvoices, initialStats, products }: InvoiceListProps) {
   const [invoices, setInvoices] = React.useState<Invoice[]>(initialInvoices);
   const [stats, setStats] = React.useState<Stats>(initialStats);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -352,7 +360,26 @@ export function InvoiceList({ initialInvoices, initialStats }: InvoiceListProps)
                   <div key={index} className="flex gap-2 items-end">
                     <div className="flex-1">
                       {index === 0 && <Label className="text-xs text-muted-foreground">Désignation</Label>}
-                      <Input value={item.designation} onChange={(e) => updateItem(index, "designation", e.target.value)} placeholder="Description" />
+                      <select
+                        value={item.designation}
+                        onChange={(e) => {
+                          const selectedProduct = products.find(
+                            (p) => `${p.name}${p.contenance ? ` - ${p.contenance}` : ""}` === e.target.value
+                          );
+                          updateItem(index, "designation", e.target.value);
+                          if (selectedProduct) {
+                            updateItem(index, "prixUnit", selectedProduct.prixVente);
+                          }
+                        }}
+                        className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
+                      >
+                        <option value="">Sélectionner un produit...</option>
+                        {products.map((product) => (
+                          <option key={product.id} value={`${product.name}${product.contenance ? ` - ${product.contenance}` : ""}`}>
+                            {product.name}{product.contenance ? ` - ${product.contenance}` : ""} ({formatNumber(product.prixVente)} TND)
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="w-24">
                       {index === 0 && <Label className="text-xs text-muted-foreground">Quantité</Label>}
