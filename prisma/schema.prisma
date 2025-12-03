@@ -84,3 +84,43 @@ model PrintJob {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+// Invoice/Devis model
+model Invoice {
+  id             String        @id @default(cuid())
+  numero         String        @unique // Invoice number e.g. "202501261125"
+  date           DateTime      @default(now())
+  // Client info
+  clientName     String        // Company name
+  clientTel      String?       // Phone
+  clientEmail    String?       // Email
+  clientAddress  String?       // Address
+  // Totals
+  sousTotal      Float         // Subtotal
+  timbre         Float         @default(0) // Stamp tax
+  total          Float         // Total amount
+  // Status
+  status         InvoiceStatus @default(PENDING)
+  // Relations
+  items          InvoiceItem[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  designation String   // Product/service description
+  quantite    Float    // Quantity
+  prixUnit    Float    // Unit price
+  total       Float    // Line total (quantite * prixUnit)
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELLED
+}

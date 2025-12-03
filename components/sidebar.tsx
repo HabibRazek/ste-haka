@@ -13,6 +13,7 @@ import {
   Package,
   ShoppingBag,
   Printer,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,11 @@ const navItems = [
     title: "Impression",
     href: "/impression",
     icon: Printer,
+  },
+  {
+    title: "Devis",
+    href: "/devis",
+    icon: FileText,
   },
   {
     title: "Tâches",
