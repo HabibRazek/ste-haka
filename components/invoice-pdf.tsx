@@ -33,9 +33,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 80,
-    height: 55,
+    height: 80,
     marginRight: 15,
-    objectFit: "contain",
   },
   companyInfo: {
     flex: 1,
@@ -187,9 +186,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   signatureImage: {
-    width: 220,
-    height: 120,
-    objectFit: "contain",
+    width: 280,
+    height: 150,
   },
   signaturePlaceholder: {
     width: 150,
