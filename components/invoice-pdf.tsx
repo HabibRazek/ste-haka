@@ -29,28 +29,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 30,
   },
-  logo: {
-    width: 60,
-    marginRight: 15,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: 700,
-    color: "#1a365d",
-    lineHeight: 0.9,
-  },
   companyInfo: {
     flex: 1,
   },
   companyName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 700,
-    color: "#1a365d",
-    marginBottom: 3,
+    color: "#000",
+    marginBottom: 5,
   },
   companyDetail: {
     fontSize: 9,
-    color: "#444",
+    color: "#333",
     marginBottom: 1,
   },
   // Devis & Client boxes
@@ -58,18 +48,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#1a365d",
+    borderColor: "#000",
   },
   devisBox: {
     flex: 1,
     borderRightWidth: 1,
-    borderRightColor: "#1a365d",
+    borderRightColor: "#000",
   },
   clientBox: {
     flex: 1,
   },
   boxHeader: {
-    backgroundColor: "#1a365d",
+    backgroundColor: "#000",
     padding: 6,
   },
   boxHeaderText: {
@@ -88,12 +78,13 @@ const styles = StyleSheet.create({
   boxLabel: {
     width: 80,
     fontSize: 9,
-    color: "#666",
+    color: "#333",
   },
   boxValue: {
     flex: 1,
     fontSize: 9,
     fontWeight: 700,
+    color: "#000",
   },
   // Items table
   table: {
@@ -101,7 +92,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#1a365d",
+    backgroundColor: "#000",
     padding: 8,
   },
   tableHeaderCell: {
@@ -112,8 +103,9 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: "#ccc",
     padding: 8,
+    minHeight: 25,
   },
   colDesignation: { flex: 3 },
   colQuantite: { width: 70, textAlign: "right" },
@@ -129,33 +121,34 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 4,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#ccc",
   },
   totalLabel: {
     fontSize: 10,
-    color: "#666",
+    color: "#333",
   },
   totalValue: {
     fontSize: 10,
     fontWeight: 700,
+    color: "#000",
   },
   grandTotalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 6,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f0f0f0",
     paddingHorizontal: 8,
     marginTop: 4,
   },
   grandTotalLabel: {
     fontSize: 12,
     fontWeight: 700,
-    color: "#1a365d",
+    color: "#000",
   },
   grandTotalValue: {
     fontSize: 12,
     fontWeight: 700,
-    color: "#1a365d",
+    color: "#000",
   },
   // Amount in words
   amountWords: {
@@ -166,11 +159,13 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 700,
     marginRight: 10,
+    color: "#000",
   },
   amountWordsValue: {
     fontSize: 10,
-    color: "#0066cc",
+    color: "#000",
     fontWeight: 700,
+    textDecoration: "underline",
   },
   // Signature section
   signatureSection: {
@@ -181,10 +176,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 700,
     marginBottom: 20,
+    color: "#000",
   },
   stampBox: {
     borderWidth: 2,
-    borderColor: "#228b22",
+    borderColor: "#000",
     borderRadius: 4,
     padding: 15,
     alignItems: "center",
@@ -193,11 +189,11 @@ const styles = StyleSheet.create({
   stampText: {
     fontSize: 11,
     fontWeight: 700,
-    color: "#228b22",
+    color: "#000",
   },
   stampDetail: {
     fontSize: 8,
-    color: "#228b22",
+    color: "#333",
     marginTop: 2,
   },
   // Footer
@@ -209,6 +205,7 @@ const styles = StyleSheet.create({
   },
   paymentInfo: {
     fontSize: 9,
+    color: "#000",
   },
   paymentLabel: {
     fontWeight: 700,
@@ -293,15 +290,14 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
     return `${d.getDate().toString().padStart(2, "0")} / ${(d.getMonth() + 1).toString().padStart(2, "0")} / ${d.getFullYear()}`;
   };
 
+  // Ensure items is always an array
+  const items = invoice.items || [];
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>H</Text>
-            <Text style={[styles.logoText, { marginLeft: 10 }]}>A</Text>
-          </View>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>STE HAKA IMPORT-EXPORT</Text>
             <Text style={styles.companyDetail}>Adresse: Rue Imam Souhnoune, Sidi Achour Nabeul-8000</Text>
@@ -361,14 +357,23 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
             <Text style={[styles.tableHeaderCell, styles.colPrix]}>PRIX</Text>
             <Text style={[styles.tableHeaderCell, styles.colTotal]}>TOTAL</Text>
           </View>
-          {invoice.items.map((item, index) => (
-            <View key={index} style={styles.tableRow}>
-              <Text style={styles.colDesignation}>{item.designation}</Text>
-              <Text style={styles.colQuantite}>{formatNumber(item.quantite)}</Text>
-              <Text style={styles.colPrix}>{formatNumber(item.prixUnit)}</Text>
-              <Text style={styles.colTotal}>{formatNumber(item.total)}</Text>
+          {items.length > 0 ? (
+            items.map((item, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={styles.colDesignation}>{item.designation || ""}</Text>
+                <Text style={styles.colQuantite}>{formatNumber(item.quantite || 0)}</Text>
+                <Text style={styles.colPrix}>{formatNumber(item.prixUnit || 0)}</Text>
+                <Text style={styles.colTotal}>{formatNumber(item.total || 0)}</Text>
+              </View>
+            ))
+          ) : (
+            <View style={styles.tableRow}>
+              <Text style={styles.colDesignation}>Aucun article</Text>
+              <Text style={styles.colQuantite}>-</Text>
+              <Text style={styles.colPrix}>-</Text>
+              <Text style={styles.colTotal}>-</Text>
             </View>
-          ))}
+          )}
         </View>
 
         {/* Totals */}

@@ -82,7 +82,7 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
   const [clientEmail, setClientEmail] = React.useState("");
   const [timbre, setTimbre] = React.useState(0);
   const [items, setItems] = React.useState<InvoiceItemInput[]>([
-    { designation: "", quantite: 0, prixUnit: 0 },
+    { designation: "", quantite: 1, prixUnit: 0 },
   ]);
 
   const formatNumber = (num: number) => {
@@ -135,7 +135,7 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
   };
 
   const addItem = () => {
-    setItems([...items, { designation: "", quantite: 0, prixUnit: 0 }]);
+    setItems([...items, { designation: "", quantite: 1, prixUnit: 0 }]);
   };
 
   const removeItem = (index: number) => {
@@ -145,9 +145,27 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
   };
 
   const updateItem = (index: number, field: keyof InvoiceItemInput, value: string | number) => {
-    const newItems = [...items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    setItems(newItems);
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      newItems[index] = { ...newItems[index], [field]: value };
+      return newItems;
+    });
+  };
+
+  const selectProduct = (index: number, productName: string) => {
+    const selectedProduct = products.find(
+      (p) => `${p.name}${p.contenance ? ` - ${p.contenance}` : ""}` === productName
+    );
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      newItems[index] = {
+        ...newItems[index],
+        designation: productName,
+        prixUnit: selectedProduct ? selectedProduct.prixVente : newItems[index].prixUnit,
+        quantite: newItems[index].quantite || 1, // Set default quantity to 1 if 0
+      };
+      return newItems;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -362,15 +380,7 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
                       {index === 0 && <Label className="text-xs text-muted-foreground">Désignation</Label>}
                       <select
                         value={item.designation}
-                        onChange={(e) => {
-                          const selectedProduct = products.find(
-                            (p) => `${p.name}${p.contenance ? ` - ${p.contenance}` : ""}` === e.target.value
-                          );
-                          updateItem(index, "designation", e.target.value);
-                          if (selectedProduct) {
-                            updateItem(index, "prixUnit", selectedProduct.prixVente);
-                          }
-                        }}
+                        onChange={(e) => selectProduct(index, e.target.value)}
                         className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
                       >
                         <option value="">Sélectionner un produit...</option>
