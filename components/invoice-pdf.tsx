@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   signatureTitle: {
     fontSize: 10,
     fontWeight: 700,
-    marginBottom: 8,
+    marginBottom: 0,
     color: "#000",
   },
   signatureImage: {

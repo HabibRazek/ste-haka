@@ -62,13 +62,24 @@ type Product = {
   prixVente: number;
 };
 
+type PrintJob = {
+  id: string;
+  client: string;
+  description: string | null;
+  largeur: number;
+  hauteur: number;
+  quantite: number;
+  prixTotal: number;
+};
+
 interface InvoiceListProps {
   initialInvoices: Invoice[];
   initialStats: Stats;
   products: Product[];
+  printJobs: PrintJob[];
 }
 
-export function InvoiceList({ initialInvoices, initialStats, products }: InvoiceListProps) {
+export function InvoiceList({ initialInvoices, initialStats, products, printJobs }: InvoiceListProps) {
   const [invoices, setInvoices] = React.useState<Invoice[]>(initialInvoices);
   const [stats, setStats] = React.useState<Stats>(initialStats);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -152,18 +163,42 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
     });
   };
 
-  const selectProduct = (index: number, productName: string) => {
-    const selectedProduct = products.find(
-      (p) => `${p.name}${p.contenance ? ` - ${p.contenance}` : ""}` === productName
-    );
+  const selectDesignation = (index: number, designation: string, price: number, qty?: number) => {
     setItems(prevItems => {
       const newItems = [...prevItems];
       newItems[index] = {
         ...newItems[index],
-        designation: productName,
-        prixUnit: selectedProduct ? selectedProduct.prixVente : newItems[index].prixUnit,
-        quantite: newItems[index].quantite || 1, // Set default quantity to 1 if 0
+        designation,
+        prixUnit: price,
+        quantite: qty || newItems[index].quantite || 1,
       };
+      return newItems;
+    });
+  };
+
+  const handleDesignationChange = (index: number, value: string) => {
+    // Check if it's a product
+    const selectedProduct = products.find(
+      (p) => `${p.name}${p.contenance ? ` - ${p.contenance}` : ""}` === value
+    );
+    if (selectedProduct) {
+      selectDesignation(index, value, selectedProduct.prixVente);
+      return;
+    }
+
+    // Check if it's a print job (format: "Impression: client - description (LxH)")
+    const selectedPrintJob = printJobs.find(
+      (pj) => `Impression: ${pj.client}${pj.description ? ` - ${pj.description}` : ""} (${pj.largeur}x${pj.hauteur}cm)` === value
+    );
+    if (selectedPrintJob) {
+      selectDesignation(index, value, selectedPrintJob.prixTotal, 1);
+      return;
+    }
+
+    // Manual input
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      newItems[index] = { ...newItems[index], designation: value };
       return newItems;
     });
   };
@@ -380,15 +415,24 @@ export function InvoiceList({ initialInvoices, initialStats, products }: Invoice
                       {index === 0 && <Label className="text-xs text-muted-foreground">Désignation</Label>}
                       <select
                         value={item.designation}
-                        onChange={(e) => selectProduct(index, e.target.value)}
+                        onChange={(e) => handleDesignationChange(index, e.target.value)}
                         className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
                       >
-                        <option value="">Sélectionner un produit...</option>
-                        {products.map((product) => (
-                          <option key={product.id} value={`${product.name}${product.contenance ? ` - ${product.contenance}` : ""}`}>
-                            {product.name}{product.contenance ? ` - ${product.contenance}` : ""} ({formatNumber(product.prixVente)} TND)
-                          </option>
-                        ))}
+                        <option value="">Sélectionner...</option>
+                        <optgroup label="📦 Produits">
+                          {products.map((product) => (
+                            <option key={product.id} value={`${product.name}${product.contenance ? ` - ${product.contenance}` : ""}`}>
+                              {product.name}{product.contenance ? ` - ${product.contenance}` : ""} ({formatNumber(product.prixVente)} TND)
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="🖨️ Travaux d'Impression">
+                          {printJobs.map((pj) => (
+                            <option key={pj.id} value={`Impression: ${pj.client}${pj.description ? ` - ${pj.description}` : ""} (${pj.largeur}x${pj.hauteur}cm)`}>
+                              {pj.client}{pj.description ? ` - ${pj.description}` : ""} ({pj.largeur}x{pj.hauteur}cm) - {formatNumber(pj.prixTotal)} TND
+                            </option>
+                          ))}
+                        </optgroup>
                       </select>
                     </div>
                     <div className="w-24">
