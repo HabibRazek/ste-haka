@@ -359,8 +359,8 @@ export function FacturePDF({ facture }: FacturePDFProps) {
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, styles.colDesignation]}>DESIGNATION</Text>
             <Text style={[styles.tableHeaderCell, styles.colQuantite]}>QUANTITE</Text>
-            <Text style={[styles.tableHeaderCell, styles.colPrix]}>PRIX</Text>
-            <Text style={[styles.tableHeaderCell, styles.colTotal]}>TOTAL</Text>
+            <Text style={[styles.tableHeaderCell, styles.colPrix]}>PRIX (TND)</Text>
+            <Text style={[styles.tableHeaderCell, styles.colTotal]}>TOTAL (TND)</Text>
           </View>
           {items.length > 0 ? (
             items.map((item, index) => (

@@ -368,8 +368,8 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, styles.colDesignation]}>DESIGNATION</Text>
             <Text style={[styles.tableHeaderCell, styles.colQuantite]}>QUANTITE</Text>
-            <Text style={[styles.tableHeaderCell, styles.colPrix]}>PRIX</Text>
-            <Text style={[styles.tableHeaderCell, styles.colTotal]}>TOTAL</Text>
+            <Text style={[styles.tableHeaderCell, styles.colPrix]}>PRIX (TND)</Text>
+            <Text style={[styles.tableHeaderCell, styles.colTotal]}>TOTAL (TND)</Text>
           </View>
           {items.length > 0 ? (
             items.map((item, index) => (
@@ -394,15 +394,15 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
         <View style={styles.totalsContainer}>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Sous-total :</Text>
-            <Text style={styles.totalValue}>{formatNumber(invoice.sousTotal)}</Text>
+            <Text style={styles.totalValue}>{formatNumber(invoice.sousTotal)} TND</Text>
           </View>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Timbre :</Text>
-            <Text style={styles.totalValue}>{formatNumber(invoice.timbre)}</Text>
+            <Text style={styles.totalValue}>{formatNumber(invoice.timbre)} TND</Text>
           </View>
           <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>Total :</Text>
-            <Text style={styles.grandTotalValue}>{formatNumber(invoice.total)}</Text>
+            <Text style={styles.grandTotalValue}>{formatNumber(invoice.total)} TND</Text>
           </View>
         </View>
 
