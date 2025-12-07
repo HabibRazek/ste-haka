@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Search, Users, FileText, Truck, Package, CheckCircle, Pencil, Trash2, X, Globe } from "lucide-react";
+import { Plus, Search, Users, FileText, Truck, CheckCircle, Pencil, Trash2, Mail, MoreHorizontal, Phone, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -357,7 +357,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                 <th className="px-4 py-3 text-left text-sm font-medium">Date arrivée</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Montant</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Statut</th>
-                <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
+                <th className="px-4 py-3 text-center text-sm font-medium"><MoreHorizontal className="h-4 w-4 inline" /></th>
               </tr>
             </thead>
             <tbody>
@@ -382,7 +382,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                       <option value="ANNULE">Annulé</option>
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-center">
                     <Button variant="ghost" size="icon" onClick={() => openEditProcedureForm(proc)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -413,9 +413,9 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                 <th className="px-4 py-3 text-left text-sm font-medium">Nom</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Entreprise</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Pays</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Téléphone</th>
-                <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
+                <th className="px-4 py-3 text-center text-sm font-medium"><Phone className="h-4 w-4 inline" /></th>
+                <th className="px-4 py-3 text-center text-sm font-medium"><Mail className="h-4 w-4 inline" /></th>
+                <th className="px-4 py-3 text-center text-sm font-medium"><MoreHorizontal className="h-4 w-4 inline" /></th>
               </tr>
             </thead>
             <tbody>
@@ -424,9 +424,21 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                   <td className="px-4 py-3 text-sm font-medium">{contact.nom}</td>
                   <td className="px-4 py-3 text-sm">{contact.entreprise || "-"}</td>
                   <td className="px-4 py-3 text-sm">{contact.pays || "-"}</td>
-                  <td className="px-4 py-3 text-sm">{contact.telephone || "-"}</td>
-                  <td className="px-4 py-3 text-sm">{contact.email || "-"}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-center">
+                    {contact.telephone ? (
+                      <a href={`tel:${contact.telephone}`} title={contact.telephone} className="text-blue-600 hover:text-blue-800">
+                        <Phone className="h-4 w-4 inline" />
+                      </a>
+                    ) : "-"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {contact.email ? (
+                      <a href={`mailto:${contact.email}`} title={contact.email} className="text-blue-600 hover:text-blue-800">
+                        <Mail className="h-4 w-4 inline" />
+                      </a>
+                    ) : "-"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
                     <Button variant="ghost" size="icon" onClick={() => openEditContactForm(contact)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
