@@ -22,6 +22,7 @@ import {
   InvoiceItemInput,
 } from "@/lib/actions/invoices";
 import Image from "next/image";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 type InvoiceItem = {
   id: string;
@@ -87,6 +88,9 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingInvoice, setEditingInvoice] = React.useState<Invoice | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [invoiceToDelete, setInvoiceToDelete] = React.useState<Invoice | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   // Form state
   const [clientName, setClientName] = React.useState("");
@@ -235,12 +239,23 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce devis ?")) return;
-    const result = await deleteInvoice(id);
-    if (result.success) {
-      setInvoices(invoices.filter((inv) => inv.id !== id));
-      window.location.reload();
+  const openDeleteDialog = (invoice: Invoice) => {
+    setInvoiceToDelete(invoice);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!invoiceToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteInvoice(invoiceToDelete.id);
+      if (result.success) {
+        setInvoices(invoices.filter((inv) => inv.id !== invoiceToDelete.id));
+        window.location.reload();
+      }
+    } finally {
+      setIsDeleting(false);
+      setInvoiceToDelete(null);
     }
   };
 
@@ -374,7 +389,7 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
                         <button onClick={() => openEditForm(invoice)} className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors" title="Modifier">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(invoice.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer">
+                        <button onClick={() => openDeleteDialog(invoice)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors" title="Supprimer">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -498,6 +513,16 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer le devis"
+        itemName={invoiceToDelete ? `Devis N° ${invoiceToDelete.numero}` : undefined}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

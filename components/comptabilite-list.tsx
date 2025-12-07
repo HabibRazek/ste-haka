@@ -12,6 +12,7 @@ import {
   Download, Pencil, Trash2, MoreHorizontal, FolderOpen, AlertTriangle,
   CheckCircle, Clock, Eye, Upload, Building2, Receipt, Wallet, BarChart3
 } from "lucide-react";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { 
   createDocument, updateDocument, deleteDocument,
   createDeclaration, updateDeclaration, deleteDeclaration, updateDeclarationStatut,
@@ -254,6 +255,15 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
     fournisseur: "", facture: "", documentUrl: "", notes: ""
   });
 
+  // Delete confirmation state
+  const [deleteDocDialogOpen, setDeleteDocDialogOpen] = useState(false);
+  const [docToDelete, setDocToDelete] = useState<Document | null>(null);
+  const [deleteDeclDialogOpen, setDeleteDeclDialogOpen] = useState(false);
+  const [declToDelete, setDeclToDelete] = useState<Declaration | null>(null);
+  const [deleteChargeDialogOpen, setDeleteChargeDialogOpen] = useState(false);
+  const [chargeToDelete, setChargeToDelete] = useState<Charge | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Handlers
   const resetDocForm = () => {
     setDocForm({
@@ -287,9 +297,19 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
     resetDocForm();
   };
 
-  const handleDeleteDoc = async (id: string) => {
-    if (confirm("Supprimer ce document ?")) {
-      await deleteDocument(id);
+  const openDeleteDocDialog = (doc: Document) => {
+    setDocToDelete(doc);
+    setDeleteDocDialogOpen(true);
+  };
+
+  const handleDeleteDoc = async () => {
+    if (!docToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteDocument(docToDelete.id);
+    } finally {
+      setIsDeleting(false);
+      setDocToDelete(null);
     }
   };
 
@@ -330,9 +350,19 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
     resetDeclForm();
   };
 
-  const handleDeleteDecl = async (id: string) => {
-    if (confirm("Supprimer cette déclaration ?")) {
-      await deleteDeclaration(id);
+  const openDeleteDeclDialog = (decl: Declaration) => {
+    setDeclToDelete(decl);
+    setDeleteDeclDialogOpen(true);
+  };
+
+  const handleDeleteDecl = async () => {
+    if (!declToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteDeclaration(declToDelete.id);
+    } finally {
+      setIsDeleting(false);
+      setDeclToDelete(null);
     }
   };
 
@@ -374,9 +404,19 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
     resetChargeForm();
   };
 
-  const handleDeleteCharge = async (id: string) => {
-    if (confirm("Supprimer cette charge ?")) {
-      await deleteCharge(id);
+  const openDeleteChargeDialog = (charge: Charge) => {
+    setChargeToDelete(charge);
+    setDeleteChargeDialogOpen(true);
+  };
+
+  const handleDeleteCharge = async () => {
+    if (!chargeToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteCharge(chargeToDelete.id);
+    } finally {
+      setIsDeleting(false);
+      setChargeToDelete(null);
     }
   };
 
@@ -646,7 +686,7 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
                     <button onClick={() => openEditDocForm(doc)} className="p-1.5 text-gray-400 hover:text-gray-600" title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
+                    <button onClick={() => openDeleteDocDialog(doc)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </td>
@@ -702,7 +742,7 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
                     <button onClick={() => openEditDeclForm(decl)} className="p-1.5 text-gray-400 hover:text-gray-600" title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button onClick={() => handleDeleteDecl(decl.id)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
+                    <button onClick={() => openDeleteDeclDialog(decl)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </td>
@@ -751,7 +791,7 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
                     <button onClick={() => openEditChargeForm(charge)} className="p-1.5 text-gray-400 hover:text-gray-600" title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button onClick={() => handleDeleteCharge(charge.id)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
+                    <button onClick={() => openDeleteChargeDialog(charge)} className="p-1.5 text-gray-400 hover:text-red-500" title="Supprimer">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </td>
@@ -1084,6 +1124,36 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Document Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDocDialogOpen}
+        onOpenChange={setDeleteDocDialogOpen}
+        onConfirm={handleDeleteDoc}
+        title="Supprimer le document"
+        itemName={docToDelete?.nom}
+        isLoading={isDeleting}
+      />
+
+      {/* Delete Declaration Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDeclDialogOpen}
+        onOpenChange={setDeleteDeclDialogOpen}
+        onConfirm={handleDeleteDecl}
+        title="Supprimer la déclaration"
+        itemName={declToDelete?.reference}
+        isLoading={isDeleting}
+      />
+
+      {/* Delete Charge Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteChargeDialogOpen}
+        onOpenChange={setDeleteChargeDialogOpen}
+        onConfirm={handleDeleteCharge}
+        title="Supprimer la charge"
+        itemName={chargeToDelete?.designation}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Pencil, Trash2, Calendar, Loader2, User, Plus, ChevronDown, ChevronRigh
 import { toggleTaskComplete, deleteTask } from "@/lib/actions/tasks";
 import { Priority } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 interface Member {
   id: string;
@@ -55,6 +56,7 @@ export function TaskItem({ task, onEdit, onAddSubTask, isSubTask = false }: Task
   const [isLoading, setIsLoading] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [showSubTasks, setShowSubTasks] = React.useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   const hasSubTasks = task.subTasks && task.subTasks.length > 0;
 
@@ -68,7 +70,6 @@ export function TaskItem({ task, onEdit, onAddSubTask, isSubTask = false }: Task
   };
 
   const handleDelete = async () => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette tâche?")) return;
     setIsDeleting(true);
     try {
       await deleteTask(task.id);
@@ -172,7 +173,7 @@ export function TaskItem({ task, onEdit, onAddSubTask, isSubTask = false }: Task
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleDelete}
+                onClick={() => setDeleteDialogOpen(true)}
                 disabled={isDeleting}
                 className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
               >
@@ -240,6 +241,16 @@ export function TaskItem({ task, onEdit, onAddSubTask, isSubTask = false }: Task
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer la tâche"
+        itemName={task.title}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

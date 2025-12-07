@@ -20,6 +20,7 @@ import {
   PrintJobFormData,
 } from "@/lib/actions/print-jobs";
 import Image from "next/image";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 type PrintJob = {
   id: string;
@@ -57,6 +58,9 @@ export function PrintJobList({ initialJobs, initialStats }: PrintJobListProps) {
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingJob, setEditingJob] = React.useState<PrintJob | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [jobToDelete, setJobToDelete] = React.useState<PrintJob | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   // Calculator state
   const [calcLargeur, setCalcLargeur] = React.useState<string>("");
@@ -141,12 +145,23 @@ export function PrintJobList({ initialJobs, initialStats }: PrintJobListProps) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce travail ?")) return;
-    const result = await deletePrintJob(id);
-    if (result.success) {
-      setJobs(jobs.filter((j) => j.id !== id));
-      window.location.reload();
+  const openDeleteDialog = (job: PrintJob) => {
+    setJobToDelete(job);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!jobToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deletePrintJob(jobToDelete.id);
+      if (result.success) {
+        setJobs(jobs.filter((j) => j.id !== jobToDelete.id));
+        window.location.reload();
+      }
+    } finally {
+      setIsDeleting(false);
+      setJobToDelete(null);
     }
   };
 
@@ -310,7 +325,7 @@ export function PrintJobList({ initialJobs, initialStats }: PrintJobListProps) {
                         <button onClick={() => openEditForm(job)} className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(job.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                        <button onClick={() => openDeleteDialog(job)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -366,6 +381,16 @@ export function PrintJobList({ initialJobs, initialStats }: PrintJobListProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer le travail d'impression"
+        itemName={jobToDelete?.client}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

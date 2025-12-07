@@ -22,6 +22,7 @@ import {
 import { ProductForm } from "./product-form";
 import { ProductWithMargin, deleteProduct } from "@/lib/actions/products";
 import { KpiCard } from "./kpi-card";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 interface ProductListProps {
   products: ProductWithMargin[];
@@ -33,6 +34,8 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<ProductWithMargin | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [productToDelete, setProductToDelete] = React.useState<ProductWithMargin | null>(null);
 
   // Pagination
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -82,16 +85,22 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit?")) return;
-    setDeletingId(id);
+  const openDeleteDialog = (product: ProductWithMargin) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!productToDelete) return;
+    setDeletingId(productToDelete.id);
     try {
-      const result = await deleteProduct(id);
+      const result = await deleteProduct(productToDelete.id);
       if (result.success) {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
+        setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       }
     } finally {
       setDeletingId(null);
+      setProductToDelete(null);
     }
   };
 
@@ -294,7 +303,7 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => openDeleteDialog(product)}
                           disabled={deletingId === product.id}
                           className="p-1.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                         >
@@ -386,6 +395,16 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
         onOpenChange={handleCloseForm}
         product={editingProduct}
         onProductSaved={handleProductSaved}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer le produit"
+        itemName={productToDelete?.name}
+        isLoading={deletingId !== null}
       />
     </div>
   );

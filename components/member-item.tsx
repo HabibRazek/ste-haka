@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { deleteMember } from "@/lib/actions/members";
 import { Pencil, Trash2, Loader2, Mail, Briefcase, ListTodo, User } from "lucide-react";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 interface Member {
   id: string;
@@ -27,10 +28,9 @@ interface MemberItemProps {
 
 export function MemberItem({ member, onEdit }: MemberItemProps) {
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce membre?")) return;
-    
     setIsDeleting(true);
     try {
       await deleteMember(member.id);
@@ -106,7 +106,7 @@ export function MemberItem({ member, onEdit }: MemberItemProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleDelete}
+            onClick={() => setDeleteDialogOpen(true)}
             disabled={isDeleting}
             className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
           >
@@ -118,6 +118,16 @@ export function MemberItem({ member, onEdit }: MemberItemProps) {
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer le membre"
+        itemName={member.name}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 }

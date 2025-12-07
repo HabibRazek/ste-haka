@@ -21,6 +21,7 @@ import {
   FactureFormData,
   FactureItemInput,
 } from "@/lib/actions/factures";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 type FactureItem = {
   id: string;
@@ -86,6 +87,9 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingFacture, setEditingFacture] = React.useState<Facture | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [factureToDelete, setFactureToDelete] = React.useState<Facture | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   // Form state
   const [clientName, setClientName] = React.useState("");
@@ -226,12 +230,23 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette facture ?")) return;
-    const result = await deleteFacture(id);
-    if (result.success) {
-      setFactures(factures.filter((f) => f.id !== id));
-      window.location.reload();
+  const openDeleteDialog = (facture: Facture) => {
+    setFactureToDelete(facture);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!factureToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteFacture(factureToDelete.id);
+      if (result.success) {
+        setFactures(factures.filter((f) => f.id !== factureToDelete.id));
+        window.location.reload();
+      }
+    } finally {
+      setIsDeleting(false);
+      setFactureToDelete(null);
     }
   };
 
@@ -374,7 +389,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
                     <Button variant="ghost" size="sm" onClick={() => openEditForm(facture)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(facture.id)} title="Supprimer">
+                    <Button variant="ghost" size="sm" onClick={() => openDeleteDialog(facture)} title="Supprimer">
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
@@ -503,6 +518,16 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer la facture"
+        itemName={factureToDelete ? `Facture N° ${factureToDelete.numero}` : undefined}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

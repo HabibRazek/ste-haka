@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Loader2, Package, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { deleteOrder, OrderWithCalculations } from "@/lib/actions/orders";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 interface OrderTableProps {
   orders: OrderWithCalculations[];
@@ -15,6 +16,8 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [orderToDelete, setOrderToDelete] = React.useState<OrderWithCalculations | null>(null);
 
   // Reset to page 1 when orders change
   React.useEffect(() => {
@@ -27,16 +30,22 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   const endIndex = startIndex + pageSize;
   const paginatedOrders = orders.slice(startIndex, endIndex);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette commande?")) return;
-    setDeletingId(id);
+  const openDeleteDialog = (order: OrderWithCalculations) => {
+    setOrderToDelete(order);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!orderToDelete) return;
+    setDeletingId(orderToDelete.id);
     try {
-      const result = await deleteOrder(id);
+      const result = await deleteOrder(orderToDelete.id);
       if (result.success) {
-        onDelete?.(id);
+        onDelete?.(orderToDelete.id);
       }
     } finally {
       setDeletingId(null);
+      setOrderToDelete(null);
     }
   };
 
@@ -134,7 +143,7 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(order.id)}
+                      onClick={() => openDeleteDialog(order)}
                       disabled={deletingId === order.id}
                       className="p-1.5 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                     >
@@ -230,6 +239,16 @@ export function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer la commande"
+        itemName={orderToDelete?.designation}
+        isLoading={deletingId !== null}
+      />
     </div>
   );
 }

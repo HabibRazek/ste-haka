@@ -27,6 +27,7 @@ import {
   ImportProcedureFormData,
 } from "@/lib/actions/imports";
 import { ImportStatus } from "@prisma/client";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 type ImportContact = {
   id: string;
@@ -106,6 +107,13 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
   const [procNotes, setProcNotes] = React.useState("");
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  // Delete confirmation state
+  const [deleteContactDialogOpen, setDeleteContactDialogOpen] = React.useState(false);
+  const [contactToDelete, setContactToDelete] = React.useState<ImportContact | null>(null);
+  const [deleteProcedureDialogOpen, setDeleteProcedureDialogOpen] = React.useState(false);
+  const [procedureToDelete, setProcedureToDelete] = React.useState<ImportProcedure | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const formatDate = (date: Date | null) => {
     if (!date) return "-";
@@ -194,11 +202,22 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
     setIsSubmitting(false);
   };
 
-  const handleDeleteContact = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce contact ?")) return;
-    const result = await deleteImportContact(id);
-    if (result.success) {
-      setContacts(contacts.filter((c) => c.id !== id));
+  const openDeleteContactDialog = (contact: ImportContact) => {
+    setContactToDelete(contact);
+    setDeleteContactDialogOpen(true);
+  };
+
+  const handleDeleteContact = async () => {
+    if (!contactToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteImportContact(contactToDelete.id);
+      if (result.success) {
+        setContacts(contacts.filter((c) => c.id !== contactToDelete.id));
+      }
+    } finally {
+      setIsDeleting(false);
+      setContactToDelete(null);
     }
   };
 
@@ -266,11 +285,22 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
     setIsSubmitting(false);
   };
 
-  const handleDeleteProcedure = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette procédure ?")) return;
-    const result = await deleteImportProcedure(id);
-    if (result.success) {
-      setProcedures(procedures.filter((p) => p.id !== id));
+  const openDeleteProcedureDialog = (procedure: ImportProcedure) => {
+    setProcedureToDelete(procedure);
+    setDeleteProcedureDialogOpen(true);
+  };
+
+  const handleDeleteProcedure = async () => {
+    if (!procedureToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteImportProcedure(procedureToDelete.id);
+      if (result.success) {
+        setProcedures(procedures.filter((p) => p.id !== procedureToDelete.id));
+      }
+    } finally {
+      setIsDeleting(false);
+      setProcedureToDelete(null);
     }
   };
 
@@ -388,7 +418,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                     <Button variant="ghost" size="icon" onClick={() => openEditProcedureForm(proc)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProcedure(proc.id)} title="Supprimer">
+                    <Button variant="ghost" size="icon" onClick={() => openDeleteProcedureDialog(proc)} title="Supprimer">
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </td>
@@ -435,7 +465,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                     <Button variant="ghost" size="icon" onClick={() => openEditContactForm(contact)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteContact(contact.id)} title="Supprimer">
+                    <Button variant="ghost" size="icon" onClick={() => openDeleteContactDialog(contact)} title="Supprimer">
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </td>
@@ -579,6 +609,26 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Contact Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteContactDialogOpen}
+        onOpenChange={setDeleteContactDialogOpen}
+        onConfirm={handleDeleteContact}
+        title="Supprimer le contact"
+        itemName={contactToDelete?.nom}
+        isLoading={isDeleting}
+      />
+
+      {/* Delete Procedure Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteProcedureDialogOpen}
+        onOpenChange={setDeleteProcedureDialogOpen}
+        onConfirm={handleDeleteProcedure}
+        title="Supprimer la procédure"
+        itemName={procedureToDelete?.description}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
