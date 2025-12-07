@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Search, FileText, DollarSign, Clock, CheckCircle, Pencil, Trash2, Download, X } from "lucide-react";
+import { Plus, Search, FileText, DollarSign, Clock, CheckCircle, Pencil, Trash2, Download, X, Mail, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { KpiCard } from "@/components/kpi-card";
@@ -38,6 +38,7 @@ type Facture = {
   clientTel: string | null;
   clientEmail: string | null;
   clientAddress: string | null;
+  clientMatriculeFiscale: string | null;
   sousTotal: number;
   timbre: number;
   total: number;
@@ -90,6 +91,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
   const [clientName, setClientName] = React.useState("");
   const [clientTel, setClientTel] = React.useState("");
   const [clientEmail, setClientEmail] = React.useState("");
+  const [clientMatriculeFiscale, setClientMatriculeFiscale] = React.useState("");
   const [timbre, setTimbre] = React.useState(0);
   const [items, setItems] = React.useState<FactureItemInput[]>([
     { designation: "", quantite: 1, prixUnit: 0 },
@@ -113,6 +115,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
     setClientName("");
     setClientTel("");
     setClientEmail("");
+    setClientMatriculeFiscale("");
     setTimbre(0);
     setItems([{ designation: "", quantite: 1, prixUnit: 0 }]);
     setEditingFacture(null);
@@ -128,6 +131,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
     setClientName(facture.clientName);
     setClientTel(facture.clientTel || "");
     setClientEmail(facture.clientEmail || "");
+    setClientMatriculeFiscale(facture.clientMatriculeFiscale || "");
     setTimbre(facture.timbre);
     setItems(
       facture.items.map((item) => ({
@@ -202,6 +206,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
       clientName,
       clientTel: clientTel || undefined,
       clientEmail: clientEmail || undefined,
+      clientMatriculeFiscale: clientMatriculeFiscale || undefined,
       items: items.filter((item) => item.designation && item.quantite > 0),
       timbre,
     };
@@ -343,9 +348,10 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">N° Facture</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Client</th>
+              <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase"><Mail className="h-4 w-4 inline" /></th>
               <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
               <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase">Statut</th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase"><MoreHorizontal className="h-4 w-4 inline" /></th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -354,17 +360,24 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">{facture.numero}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">{formatDate(facture.date)}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{facture.clientName}</td>
+                <td className="px-4 py-3 text-center">
+                  {facture.clientEmail && (
+                    <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="text-blue-600 hover:text-blue-800">
+                      <Mail className="h-4 w-4 inline" />
+                    </a>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(facture.total)} TND</td>
                 <td className="px-4 py-3 text-center">{getStatusBadge(facture.status)}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => downloadPDF(facture)}>
+                <td className="px-4 py-3 text-center">
+                  <div className="flex justify-center gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => downloadPDF(facture)} title="Télécharger PDF">
                       <Download className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => openEditForm(facture)}>
+                    <Button variant="ghost" size="sm" onClick={() => openEditForm(facture)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(facture.id)}>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(facture.id)} title="Supprimer">
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
@@ -373,7 +386,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
             ))}
             {filteredFactures.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
                   Aucune facture trouvée
                 </td>
               </tr>
@@ -390,10 +403,14 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Client Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Nom du Client *</Label>
                 <Input value={clientName} onChange={(e) => setClientName(e.target.value)} required />
+              </div>
+              <div>
+                <Label>Matricule Fiscale</Label>
+                <Input value={clientMatriculeFiscale} onChange={(e) => setClientMatriculeFiscale(e.target.value)} placeholder="Ex: 1234567/A/B/C/000" />
               </div>
               <div>
                 <Label>Téléphone</Label>

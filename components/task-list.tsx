@@ -15,6 +15,20 @@ interface Member {
   email: string;
 }
 
+interface SubTask {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: Priority;
+  dueDate: Date | null;
+  completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  memberId?: string | null;
+  member?: Member | null;
+  parentId?: string | null;
+}
+
 interface Task {
   id: string;
   title: string;
@@ -26,6 +40,8 @@ interface Task {
   updatedAt: Date;
   memberId?: string | null;
   member?: Member | null;
+  parentId?: string | null;
+  subTasks?: SubTask[];
 }
 
 interface TaskListProps {
@@ -34,7 +50,8 @@ interface TaskListProps {
 
 export function TaskList({ tasks }: TaskListProps) {
   const [isFormOpen, setIsFormOpen] = React.useState(false);
-  const [editingTask, setEditingTask] = React.useState<Task | null>(null);
+  const [editingTask, setEditingTask] = React.useState<Task | SubTask | null>(null);
+  const [parentTaskId, setParentTaskId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [filterPriority, setFilterPriority] = React.useState<string>("all");
   const [filterStatus, setFilterStatus] = React.useState<string>("all");
@@ -61,14 +78,22 @@ export function TaskList({ tasks }: TaskListProps) {
     });
   }, [tasks, searchQuery, filterPriority, filterStatus]);
 
-  const handleEdit = (task: Task) => {
+  const handleEdit = (task: Task | SubTask) => {
     setEditingTask(task);
+    setParentTaskId(null);
+    setIsFormOpen(true);
+  };
+
+  const handleAddSubTask = (parentId: string) => {
+    setEditingTask(null);
+    setParentTaskId(parentId);
     setIsFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingTask(null);
+    setParentTaskId(null);
   };
 
   return (
@@ -149,7 +174,7 @@ export function TaskList({ tasks }: TaskListProps) {
       ) : (
         <div className="space-y-4">
           {filteredTasks.map((task) => (
-            <TaskItem key={task.id} task={task} onEdit={handleEdit} />
+            <TaskItem key={task.id} task={task} onEdit={handleEdit} onAddSubTask={handleAddSubTask} />
           ))}
         </div>
       )}
@@ -159,6 +184,7 @@ export function TaskList({ tasks }: TaskListProps) {
         open={isFormOpen}
         onOpenChange={handleCloseForm}
         task={editingTask}
+        parentId={parentTaskId}
       />
     </div>
   );

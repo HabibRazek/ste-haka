@@ -31,16 +31,18 @@ interface Task {
   dueDate: Date | null;
   completed: boolean;
   memberId?: string | null;
+  parentId?: string | null;
 }
 
 interface TaskFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: Task | null;
+  parentId?: string | null;
   onSuccess?: () => void;
 }
 
-export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps) {
+export function TaskForm({ open, onOpenChange, task, parentId, onSuccess }: TaskFormProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [members, setMembers] = React.useState<Member[]>([]);
@@ -51,6 +53,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
     priority: "MEDIUM" as Priority,
     dueDate: "",
     memberId: "",
+    parentId: "",
   });
 
   // Fetch members when dialog opens
@@ -74,6 +77,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
           ? new Date(task.dueDate).toISOString().split("T")[0]
           : "",
         memberId: task.memberId || "",
+        parentId: task.parentId || "",
       });
     } else {
       setFormData({
@@ -82,9 +86,10 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         priority: "MEDIUM" as Priority,
         dueDate: "",
         memberId: "",
+        parentId: parentId || "",
       });
     }
-  }, [task, open]);
+  }, [task, parentId, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,11 +123,15 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
     }
   };
 
+  const isSubTask = !!parentId || !!task?.parentId;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent onClose={() => onOpenChange(false)}>
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">{task ? "Modifier la tâche" : "Nouvelle tâche"}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            {task ? "Modifier la tâche" : isSubTask ? "Nouvelle sous-tâche" : "Nouvelle tâche"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (

@@ -14,6 +14,7 @@ export type InvoiceFormData = {
   clientTel?: string;
   clientEmail?: string;
   clientAddress?: string;
+  clientMatriculeFiscale?: string;
   items: InvoiceItemInput[];
   timbre?: number;
 };
@@ -26,6 +27,7 @@ export type InvoiceWithItems = {
   clientTel: string | null;
   clientEmail: string | null;
   clientAddress: string | null;
+  clientMatriculeFiscale: string | null;
   sousTotal: number;
   timbre: number;
   total: number;
@@ -41,16 +43,26 @@ export type InvoiceWithItems = {
   updatedAt: Date;
 };
 
-// Generate invoice number: YYYYMMDDHHMMSS
-function generateInvoiceNumber(): string {
+// Generate invoice number: 0001-2025 format
+async function generateInvoiceNumber(): Promise<string> {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-  return `${year}${month}${day}${hours}${minutes}${seconds}`;
+
+  // Get count of invoices this year to generate next number
+  const startOfYear = new Date(year, 0, 1);
+  const endOfYear = new Date(year + 1, 0, 1);
+
+  const count = await prisma.invoice.count({
+    where: {
+      createdAt: {
+        gte: startOfYear,
+        lt: endOfYear,
+      },
+    },
+  });
+
+  const nextNumber = String(count + 1).padStart(4, "0");
+  return `${nextNumber}-${year}`;
 }
 
 // Get all invoices
@@ -97,13 +109,16 @@ export async function createInvoice(data: InvoiceFormData) {
     const sousTotal = items.reduce((sum, item) => sum + item.total, 0);
     const total = sousTotal + timbre;
 
+    const numero = await generateInvoiceNumber();
+
     const invoice = await prisma.invoice.create({
       data: {
-        numero: generateInvoiceNumber(),
+        numero,
         clientName: data.clientName,
         clientTel: data.clientTel || null,
         clientEmail: data.clientEmail || null,
         clientAddress: data.clientAddress || null,
+        clientMatriculeFiscale: data.clientMatriculeFiscale || null,
         sousTotal,
         timbre,
         total,
@@ -143,6 +158,7 @@ export async function updateInvoice(id: string, data: InvoiceFormData) {
         clientTel: data.clientTel || null,
         clientEmail: data.clientEmail || null,
         clientAddress: data.clientAddress || null,
+        clientMatriculeFiscale: data.clientMatriculeFiscale || null,
         sousTotal,
         timbre,
         total,

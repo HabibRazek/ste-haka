@@ -280,6 +280,7 @@ type Invoice = {
   clientTel: string | null;
   clientEmail: string | null;
   clientAddress: string | null;
+  clientMatriculeFiscale: string | null;
   sousTotal: number;
   timbre: number;
   total: number;
@@ -310,7 +311,7 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
             <Text style={styles.companyDetail}>Adresse: Rue Imam Souhnoune, Sidi Achour Nabeul-8000</Text>
             <Text style={styles.companyDetail}>Matricule Fiscale: 1944751Q/N/M/000</Text>
             <Text style={styles.companyDetail}>Tel: +216 98 555 484</Text>
-            <Text style={styles.companyDetail}>Email: omegapack.contact@gmail.com</Text>
+            <Text style={styles.companyDetail}>Email: ste.haka.contact@gmail.com</Text>
           </View>
         </View>
 
@@ -350,6 +351,12 @@ export function InvoicePDF({ invoice }: InvoicePDFProps) {
                 <View style={styles.boxRow}>
                   <Text style={styles.boxLabel}>Email:</Text>
                   <Text style={styles.boxValue}>{invoice.clientEmail}</Text>
+                </View>
+              )}
+              {invoice.clientMatriculeFiscale && (
+                <View style={styles.boxRow}>
+                  <Text style={styles.boxLabel}>MF:</Text>
+                  <Text style={styles.boxValue}>{invoice.clientMatriculeFiscale}</Text>
                 </View>
               )}
             </View>

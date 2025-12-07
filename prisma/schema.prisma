@@ -33,6 +33,9 @@ model Task {
   updatedAt   DateTime  @updatedAt
   memberId    String?
   member      Member?   @relation(fields: [memberId], references: [id])
+  parentId    String?
+  parent      Task?     @relation("SubTasks", fields: [parentId], references: [id])
+  subTasks    Task[]    @relation("SubTasks")
 }
 
 enum Priority {
@@ -87,24 +90,25 @@ model PrintJob {
 
 // Invoice/Devis model
 model Invoice {
-  id             String        @id @default(cuid())
-  numero         String        @unique // Invoice number e.g. "202501261125"
-  date           DateTime      @default(now())
+  id                    String        @id @default(cuid())
+  numero                String        @unique // Invoice number e.g. "0001-2025"
+  date                  DateTime      @default(now())
   // Client info
-  clientName     String        // Company name
-  clientTel      String?       // Phone
-  clientEmail    String?       // Email
-  clientAddress  String?       // Address
+  clientName            String        // Company name
+  clientTel             String?       // Phone
+  clientEmail           String?       // Email
+  clientAddress         String?       // Address
+  clientMatriculeFiscale String?      // Matricule Fiscale (Tax ID)
   // Totals
-  sousTotal      Float         // Subtotal
-  timbre         Float         @default(0) // Stamp tax
-  total          Float         // Total amount
+  sousTotal             Float         // Subtotal
+  timbre                Float         @default(0) // Stamp tax
+  total                 Float         // Total amount
   // Status
-  status         InvoiceStatus @default(PENDING)
+  status                InvoiceStatus @default(PENDING)
   // Relations
-  items          InvoiceItem[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  items                 InvoiceItem[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 }
 
 model InvoiceItem {
@@ -127,24 +131,25 @@ enum InvoiceStatus {
 
 // Facture model
 model Facture {
-  id             String        @id @default(cuid())
-  numero         String        @unique // Facture number e.g. "FAC-202501261125"
-  date           DateTime      @default(now())
+  id                    String        @id @default(cuid())
+  numero                String        @unique // Facture number e.g. "0001-2025"
+  date                  DateTime      @default(now())
   // Client info
-  clientName     String        // Company name
-  clientTel      String?       // Phone
-  clientEmail    String?       // Email
-  clientAddress  String?       // Address
+  clientName            String        // Company name
+  clientTel             String?       // Phone
+  clientEmail           String?       // Email
+  clientAddress         String?       // Address
+  clientMatriculeFiscale String?      // Matricule Fiscale (Tax ID)
   // Totals
-  sousTotal      Float         // Subtotal
-  timbre         Float         @default(0) // Stamp tax
-  total          Float         // Total amount
+  sousTotal             Float         // Subtotal
+  timbre                Float         @default(0) // Stamp tax
+  total                 Float         // Total amount
   // Status
-  status         InvoiceStatus @default(PENDING)
+  status                InvoiceStatus @default(PENDING)
   // Relations
-  items          FactureItem[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  items                 FactureItem[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 }
 
 model FactureItem {
@@ -157,4 +162,45 @@ model FactureItem {
   facture     Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Import Contact model for managing import suppliers/contacts
+model ImportContact {
+  id          String   @id @default(cuid())
+  nom         String   // Contact name
+  entreprise  String?  // Company name
+  pays        String?  // Country
+  telephone   String?  // Phone number
+  email       String?  // Email
+  adresse     String?  // Address
+  notes       String?  // Additional notes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Import Procedure model for tracking import procedures
+model ImportProcedure {
+  id              String            @id @default(cuid())
+  reference       String            @unique // Reference number
+  description     String            // Description of the import
+  fournisseur     String            // Supplier name
+  pays            String?           // Country of origin
+  dateCommande    DateTime?         // Order date
+  dateExpedition  DateTime?         // Shipping date
+  dateArrivee     DateTime?         // Expected/actual arrival date
+  statut          ImportStatus      @default(EN_COURS)
+  montant         Float?            // Total amount
+  devise          String?           @default("EUR") // Currency
+  documents       String?           // Document references
+  notes           String?           // Additional notes
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+enum ImportStatus {
+  EN_COURS      // In progress
+  EXPEDIE       // Shipped
+  EN_DOUANE     // In customs
+  LIVRE         // Delivered
+  ANNULE        // Cancelled
 }

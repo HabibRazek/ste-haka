@@ -10,14 +10,22 @@ export type TaskFormData = {
   priority: Priority;
   dueDate?: string;
   memberId?: string;
+  parentId?: string;
 };
 
 export async function getTasks() {
   try {
     const tasks = await prisma.task.findMany({
+      where: { parentId: null }, // Only get top-level tasks
       orderBy: [{ completed: "asc" }, { createdAt: "desc" }],
       include: {
         member: true,
+        subTasks: {
+          include: {
+            member: true,
+          },
+          orderBy: [{ completed: "asc" }, { createdAt: "desc" }],
+        },
       },
     });
     return { success: true, data: tasks };
@@ -91,6 +99,7 @@ export async function createTask(formData: TaskFormData) {
         priority: formData.priority,
         dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
         memberId: formData.memberId || null,
+        parentId: formData.parentId || null,
       },
     });
 

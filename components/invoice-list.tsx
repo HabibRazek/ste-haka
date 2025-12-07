@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Search, FileText, DollarSign, Clock, CheckCircle, Pencil, Trash2, Download, Eye, X } from "lucide-react";
+import { Plus, Search, FileText, DollarSign, Clock, CheckCircle, Pencil, Trash2, Download, Eye, X, Mail, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { KpiCard } from "@/components/kpi-card";
@@ -39,6 +39,7 @@ type Invoice = {
   clientTel: string | null;
   clientEmail: string | null;
   clientAddress: string | null;
+  clientMatriculeFiscale: string | null;
   sousTotal: number;
   timbre: number;
   total: number;
@@ -91,6 +92,7 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
   const [clientName, setClientName] = React.useState("");
   const [clientTel, setClientTel] = React.useState("");
   const [clientEmail, setClientEmail] = React.useState("");
+  const [clientMatriculeFiscale, setClientMatriculeFiscale] = React.useState("");
   const [timbre, setTimbre] = React.useState(0);
   const [items, setItems] = React.useState<InvoiceItemInput[]>([
     { designation: "", quantite: 1, prixUnit: 0 },
@@ -119,8 +121,9 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
     setClientName("");
     setClientTel("");
     setClientEmail("");
+    setClientMatriculeFiscale("");
     setTimbre(0);
-    setItems([{ designation: "", quantite: 0, prixUnit: 0 }]);
+    setItems([{ designation: "", quantite: 1, prixUnit: 0 }]);
     setEditingInvoice(null);
   };
 
@@ -134,6 +137,7 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
     setClientName(invoice.clientName);
     setClientTel(invoice.clientTel || "");
     setClientEmail(invoice.clientEmail || "");
+    setClientMatriculeFiscale(invoice.clientMatriculeFiscale || "");
     setTimbre(invoice.timbre);
     setItems(
       invoice.items.map((item) => ({
@@ -211,6 +215,7 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
       clientName,
       clientTel: clientTel || undefined,
       clientEmail: clientEmail || undefined,
+      clientMatriculeFiscale: clientMatriculeFiscale || undefined,
       items: items.filter((item) => item.designation && item.quantite > 0),
       timbre,
     };
@@ -343,9 +348,10 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">N° Devis</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Date</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Client</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase"><Mail className="h-4 w-4 inline" /></th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Total</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase">Statut</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Actions</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase"><MoreHorizontal className="h-4 w-4 inline" /></th>
                 </tr>
               </thead>
               <tbody>
@@ -354,10 +360,17 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
                     <td className="px-4 py-3 font-mono font-medium">{invoice.numero}</td>
                     <td className="px-4 py-3 text-gray-600">{formatDate(invoice.date)}</td>
                     <td className="px-4 py-3 font-medium">{invoice.clientName}</td>
+                    <td className="px-4 py-3 text-center">
+                      {invoice.clientEmail && (
+                        <a href={`mailto:${invoice.clientEmail}`} title={invoice.clientEmail} className="text-blue-600 hover:text-blue-800">
+                          <Mail className="h-4 w-4 inline" />
+                        </a>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-right font-semibold whitespace-nowrap">{formatNumber(invoice.total)} TND</td>
                     <td className="px-4 py-3 text-center">{getStatusBadge(invoice.status)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
                         <button onClick={() => downloadPDF(invoice)} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors" title="Télécharger PDF">
                           <Download className="h-4 w-4" />
                         </button>
@@ -385,10 +398,14 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Client Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="clientName">Entreprise *</Label>
                 <Input id="clientName" value={clientName} onChange={(e) => setClientName(e.target.value)} required />
+              </div>
+              <div>
+                <Label htmlFor="clientMF">Matricule Fiscale</Label>
+                <Input id="clientMF" value={clientMatriculeFiscale} onChange={(e) => setClientMatriculeFiscale(e.target.value)} placeholder="Ex: 1234567/A/B/C/000" />
               </div>
               <div>
                 <Label htmlFor="clientTel">Téléphone</Label>

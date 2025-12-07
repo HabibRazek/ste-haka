@@ -269,6 +269,7 @@ type Facture = {
   clientTel: string | null;
   clientEmail: string | null;
   clientAddress: string | null;
+  clientMatriculeFiscale: string | null;
   sousTotal: number;
   timbre: number;
   total: number;
@@ -301,7 +302,7 @@ export function FacturePDF({ facture }: FacturePDFProps) {
             <Text style={styles.companyDetail}>Adresse: Rue Imam Souhnoune, Sidi Achour Nabeul-8000</Text>
             <Text style={styles.companyDetail}>Matricule Fiscale: 1944751Q/N/M/000</Text>
             <Text style={styles.companyDetail}>Tel: +216 98 555 484</Text>
-            <Text style={styles.companyDetail}>Email: omegapack.contact@gmail.com</Text>
+            <Text style={styles.companyDetail}>Email: ste.haka.contact@gmail.com</Text>
           </View>
         </View>
 
@@ -341,6 +342,12 @@ export function FacturePDF({ facture }: FacturePDFProps) {
                 <View style={styles.boxRow}>
                   <Text style={styles.boxLabel}>Email</Text>
                   <Text style={styles.boxValue}>{facture.clientEmail}</Text>
+                </View>
+              )}
+              {facture.clientMatriculeFiscale && (
+                <View style={styles.boxRow}>
+                  <Text style={styles.boxLabel}>MF</Text>
+                  <Text style={styles.boxValue}>{facture.clientMatriculeFiscale}</Text>
                 </View>
               )}
             </View>
@@ -394,7 +401,7 @@ export function FacturePDF({ facture }: FacturePDFProps) {
 
         {/* Amount in words */}
         <View style={styles.amountWords}>
-          <Text style={styles.amountWordsLabel}>Arrêté la présente Facture à la somme de :</Text>
+          <Text style={styles.amountWordsLabel}>Arrêtée la présente Facture à la somme de :</Text>
           <Text style={styles.amountWordsValue}>{numberToFrenchWords(facture.total)}</Text>
         </View>
 
