@@ -16,6 +16,7 @@ import {
   FileText,
   Receipt,
   Globe,
+  Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,11 @@ const navItems = [
     title: "Importation",
     href: "/importation",
     icon: Globe,
+  },
+  {
+    title: "Comptabilité",
+    href: "/comptabilite",
+    icon: Calculator,
   },
   {
     title: "Tâches",

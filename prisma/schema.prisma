@@ -204,3 +204,180 @@ enum ImportStatus {
   LIVRE         // Delivered
   ANNULE        // Cancelled
 }
+
+// ========================
+// COMPTABILITÉ MODULE
+// ========================
+
+// Document model for storing legal/accounting documents
+model Document {
+  id          String           @id @default(cuid())
+  nom         String           // Document name
+  description String?          // Document description
+  categorie   DocumentCategory // Category
+  type        DocumentType     // Type within category
+  fichierUrl  String           // File URL from UploadThing
+  fichierNom  String           // Original file name
+  taille      Int?             // File size in bytes
+  annee       Int              // Year
+  mois        Int?             // Month (optional)
+  trimestre   Int?             // Quarter (optional)
+  montant     Float?           // Associated amount (if applicable)
+  notes       String?          // Additional notes
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+enum DocumentCategory {
+  JURIDIQUE           // Legal documents (statuts, registre commerce, etc.)
+  FISCAL              // Tax documents (declarations, attestations)
+  SOCIAL              // Social documents (CNSS, assurances)
+  BANCAIRE            // Bank documents (relevés, RIB)
+  FACTURES_FOURNISSEURS  // Supplier invoices
+  FACTURES_CLIENTS    // Client invoices (copies)
+  CONTRATS            // Contracts
+  AUTRES              // Other documents
+}
+
+enum DocumentType {
+  // Juridique
+  STATUTS
+  REGISTRE_COMMERCE
+  CARTE_IDENTIFICATION_FISCALE
+  PATENTE
+  PROCES_VERBAL
+  // Fiscal
+  DECLARATION_TVA
+  DECLARATION_IS
+  DECLARATION_IRPP
+  DECLARATION_ACOMPTE
+  ATTESTATION_FISCALE
+  QUITUS_FISCAL
+  // Social
+  DECLARATION_CNSS
+  ATTESTATION_CNSS
+  CONTRAT_ASSURANCE
+  // Bancaire
+  RELEVE_BANCAIRE
+  RIB
+  ATTESTATION_BANCAIRE
+  // Comptable
+  BILAN
+  COMPTE_RESULTAT
+  BALANCE
+  GRAND_LIVRE
+  JOURNAL
+  // Autres
+  FACTURE_FOURNISSEUR
+  FACTURE_CLIENT
+  CONTRAT
+  BON_COMMANDE
+  BON_LIVRAISON
+  AUTRE
+}
+
+// Declaration Fiscale model for tracking tax declarations
+model DeclarationFiscale {
+  id              String                @id @default(cuid())
+  reference       String                @unique // Reference number
+  type            TypeDeclaration       // Type of declaration
+  periode         PeriodeDeclaration    // Period type
+  annee           Int                   // Year
+  mois            Int?                  // Month (for monthly)
+  trimestre       Int?                  // Quarter (for quarterly)
+  dateEcheance    DateTime              // Due date
+  dateDepot       DateTime?             // Filing date
+  montantDu       Float                 // Amount due
+  montantPaye     Float?                // Amount paid
+  statut          StatutDeclaration     @default(A_DECLARER)
+  penalites       Float?                // Penalties if late
+  notes           String?               // Additional notes
+  documentId      String?               // Link to uploaded document
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+}
+
+enum TypeDeclaration {
+  TVA                    // TVA mensuelle/trimestrielle
+  ACOMPTE_IS             // Acompte provisionnel IS
+  IS_ANNUEL              // Déclaration annuelle IS
+  IRPP                   // Impôt sur le revenu
+  RETENUE_SOURCE         // Retenue à la source
+  TCL                    // Taxe sur établissements
+  DROIT_TIMBRE           // Droit de timbre
+  CNSS                   // Déclaration CNSS
+  DECLARATION_EMPLOYEUR  // Déclaration annuelle employeur
+}
+
+enum PeriodeDeclaration {
+  MENSUELLE
+  TRIMESTRIELLE
+  ANNUELLE
+}
+
+enum StatutDeclaration {
+  A_DECLARER     // To be filed
+  EN_COURS       // In progress
+  DECLAREE       // Filed
+  PAYEE          // Paid
+  EN_RETARD      // Late
+  ANNULEE        // Cancelled
+}
+
+// Exercice Comptable model for accounting periods
+model ExerciceComptable {
+  id          String           @id @default(cuid())
+  annee       Int              @unique // Year
+  dateDebut   DateTime         // Start date
+  dateFin     DateTime         // End date
+  statut      StatutExercice   @default(EN_COURS)
+  chiffreAffaires Float?       // Revenue
+  charges     Float?           // Expenses
+  resultat    Float?           // Net result
+  notes       String?          // Additional notes
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+enum StatutExercice {
+  EN_COURS    // Current/Open
+  CLOTURE     // Closed
+  ARCHIVE     // Archived
+}
+
+// Charge model for tracking expenses
+model Charge {
+  id          String         @id @default(cuid())
+  reference   String         // Reference number
+  designation String         // Description
+  categorie   CategorieCharge // Category
+  montantHT   Float          // Amount without tax
+  tva         Float          @default(0) // VAT amount
+  montantTTC  Float          // Total amount with tax
+  date        DateTime       // Date of expense
+  fournisseur String?        // Supplier
+  facture     String?        // Invoice reference
+  documentUrl String?        // Document URL
+  notes       String?        // Additional notes
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum CategorieCharge {
+  ACHATS_MARCHANDISES
+  SERVICES_EXTERIEURS
+  LOYER
+  ELECTRICITE_EAU
+  TELEPHONE_INTERNET
+  TRANSPORT
+  ASSURANCES
+  ENTRETIEN_REPARATIONS
+  FOURNITURES_BUREAU
+  PUBLICITE
+  FRAIS_BANCAIRES
+  IMPOTS_TAXES
+  SALAIRES
+  CHARGES_SOCIALES
+  AMORTISSEMENTS
+  AUTRES
+}

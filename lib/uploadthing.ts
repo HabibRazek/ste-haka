@@ -14,6 +14,15 @@ export const ourFileRouter = {
     console.log("Upload complete:", file.url);
     return { url: file.url };
   }),
+
+  // Document uploader for comptabilité (PDF, images, etc.)
+  documentUploader: f({
+    pdf: { maxFileSize: "16MB", maxFileCount: 1 },
+    image: { maxFileSize: "8MB", maxFileCount: 1 },
+  }).onUploadComplete(async ({ file }) => {
+    console.log("Document upload complete:", file.url);
+    return { url: file.url };
+  }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
