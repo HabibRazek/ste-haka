@@ -8,6 +8,12 @@ export type MonthlyData = {
   expenses: number;
 };
 
+export type MonthlyColisData = {
+  month: string;
+  colis: number;
+  marge: number;
+};
+
 export type DashboardStats = {
   totalRevenue: number;
   totalExpenses: number;
@@ -22,6 +28,10 @@ export type DashboardStats = {
   totalProducts: number;
   totalStock: number;
   monthlyData: MonthlyData[];
+  monthlyColisData: MonthlyColisData[];
+  totalColis: number;
+  colisRevenue: number;
+  colisMarge: number;
   revenueByCategory: { name: string; value: number }[];
   tasksByStatus: { name: string; value: number }[];
 };
@@ -108,6 +118,31 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const totalProducts = products.length;
   const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
 
+  // Colis (Orders) stats
+  const orders = await prisma.order.findMany({
+    where: { date: { gte: yearStart, lte: yearEnd } },
+  });
+  const totalColis = orders.length;
+  const colisRevenue = orders.reduce((sum, o) => sum + o.prixVente, 0);
+  const colisAchat = orders.reduce((sum, o) => sum + o.prixAchat, 0);
+  const colisMarge = colisRevenue - colisAchat;
+
+  // Monthly Colis data
+  const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+  const monthlyColisData: { month: string; colis: number; marge: number }[] = [];
+  for (let i = 0; i < 12; i++) {
+    const startDate = new Date(currentYear, i, 1);
+    const endDate = new Date(currentYear, i + 1, 0, 23, 59, 59);
+    const monthOrders = orders.filter(o => o.date >= startDate && o.date <= endDate);
+    const monthColis = monthOrders.length;
+    const monthMarge = monthOrders.reduce((sum, o) => sum + (o.prixVente - o.prixAchat), 0);
+    monthlyColisData.push({
+      month: months[i],
+      colis: monthColis,
+      marge: Math.round(monthMarge * 1000) / 1000,
+    });
+  }
+
   // Monthly data
   const monthlyData = await getMonthlyData(currentYear);
 
@@ -142,6 +177,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalProducts,
     totalStock,
     monthlyData,
+    monthlyColisData,
+    totalColis,
+    colisRevenue: Math.round(colisRevenue * 1000) / 1000,
+    colisMarge: Math.round(colisMarge * 1000) / 1000,
     revenueByCategory,
     tasksByStatus,
   };

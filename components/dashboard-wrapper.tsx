@@ -13,15 +13,14 @@ export function DashboardWrapper({ stats }: DashboardWrapperProps) {
     // Create workbook
     const wb = XLSX.utils.book_new();
 
-    // Summary sheet
+    // Summary sheet - Focus on Colis (Suivi des Colis)
     const summaryData = [
-      ["Tableau de Bord - Résumé", ""],
+      ["📦 Gestion & Suivi des Colis - Résumé", ""],
       ["", ""],
       ["Indicateur", "Valeur"],
-      ["Chiffre d'Affaires (TND)", stats.totalRevenue.toLocaleString("fr-FR", { minimumFractionDigits: 3 })],
-      ["Charges (TND)", stats.totalExpenses.toLocaleString("fr-FR", { minimumFractionDigits: 3 })],
-      ["Bénéfice (TND)", stats.profit.toLocaleString("fr-FR", { minimumFractionDigits: 3 })],
-      ["Marge (%)", `${stats.profitMargin}%`],
+      ["Total Colis", stats.totalColis],
+      ["CA Colis (TND)", stats.colisRevenue.toLocaleString("fr-FR", { minimumFractionDigits: 3 })],
+      ["Marge Totale (TND)", stats.colisMarge.toLocaleString("fr-FR", { minimumFractionDigits: 3 })],
       ["", ""],
       ["Total Devis", stats.totalDevis],
       ["Devis en attente", stats.pendingDevis],
@@ -34,10 +33,21 @@ export function DashboardWrapper({ stats }: DashboardWrapperProps) {
       ["Stock Total", stats.totalStock],
     ];
     const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-    wsSummary["!cols"] = [{ wch: 25 }, { wch: 20 }];
+    wsSummary["!cols"] = [{ wch: 35 }, { wch: 25 }];
     XLSX.utils.book_append_sheet(wb, wsSummary, "Résumé");
 
-    // Monthly data sheet
+    // Monthly Colis data sheet
+    const colisHeaders = ["Mois", "Nombre de Colis", "Marge (TND)"];
+    const colisRows = stats.monthlyColisData.map((m) => [
+      m.month,
+      m.colis,
+      m.marge.toLocaleString("fr-FR", { minimumFractionDigits: 3 }),
+    ]);
+    const wsColis = XLSX.utils.aoa_to_sheet([colisHeaders, ...colisRows]);
+    wsColis["!cols"] = [{ wch: 10 }, { wch: 20 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsColis, "Suivi Colis Mensuel");
+
+    // Monthly revenue data sheet (optional)
     const monthlyHeaders = ["Mois", "Chiffre d'Affaires (TND)", "Charges (TND)", "Bénéfice (TND)"];
     const monthlyRows = stats.monthlyData.map((m) => [
       m.month,
@@ -47,19 +57,7 @@ export function DashboardWrapper({ stats }: DashboardWrapperProps) {
     ]);
     const wsMonthly = XLSX.utils.aoa_to_sheet([monthlyHeaders, ...monthlyRows]);
     wsMonthly["!cols"] = [{ wch: 10 }, { wch: 25 }, { wch: 20 }, { wch: 20 }];
-    XLSX.utils.book_append_sheet(wb, wsMonthly, "Données Mensuelles");
-
-    // Charges by category sheet
-    if (stats.revenueByCategory.length > 0) {
-      const categoryHeaders = ["Catégorie", "Montant (TND)"];
-      const categoryRows = stats.revenueByCategory.map((c) => [
-        c.name,
-        c.value.toLocaleString("fr-FR", { minimumFractionDigits: 3 }),
-      ]);
-      const wsCategory = XLSX.utils.aoa_to_sheet([categoryHeaders, ...categoryRows]);
-      wsCategory["!cols"] = [{ wch: 25 }, { wch: 20 }];
-      XLSX.utils.book_append_sheet(wb, wsCategory, "Charges par Catégorie");
-    }
+    XLSX.utils.book_append_sheet(wb, wsMonthly, "Comptabilité Mensuelle");
 
     // Generate filename with date
     const date = new Date();
