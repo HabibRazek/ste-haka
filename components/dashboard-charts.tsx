@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import type { DashboardStats } from "@/lib/actions/dashboard";
 
-const BRAND_BLUE = "#305CDE";
-const BRAND_BLUE_LIGHT = "#5A7FE8";
+const BRAND_DARK = "#1a1a1a";
+const BRAND_GRAY = "#4a4a4a";
 
 const colisConfig = {
-  colis: { label: "Nombre de Colis", color: BRAND_BLUE },
-  marge: { label: "Marge (TND)", color: BRAND_BLUE_LIGHT },
+  colis: { label: "Nombre de Colis", color: BRAND_DARK },
+  marge: { label: "Marge (TND)", color: BRAND_GRAY },
 } satisfies ChartConfig;
 
 const performanceConfig = {
-  value: { label: "Valeur", color: BRAND_BLUE },
+  value: { label: "Valeur", color: BRAND_DARK },
 } satisfies ChartConfig;
 
 interface DashboardChartsProps {
@@ -42,10 +42,10 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
 
   // Performance data for bar chart
   const performanceData = [
-    { metric: "Colis", value: stats.totalColis, fill: BRAND_BLUE },
-    { metric: "Factures", value: stats.totalFactures, fill: BRAND_BLUE_LIGHT },
-    { metric: "Devis", value: stats.totalDevis, fill: BRAND_BLUE },
-    { metric: "Produits", value: stats.totalProducts, fill: BRAND_BLUE_LIGHT },
+    { metric: "Colis", value: stats.totalColis, fill: BRAND_DARK },
+    { metric: "Factures", value: stats.totalFactures, fill: BRAND_GRAY },
+    { metric: "Devis", value: stats.totalDevis, fill: BRAND_DARK },
+    { metric: "Produits", value: stats.totalProducts, fill: BRAND_GRAY },
   ];
 
   // Radar data
@@ -90,7 +90,7 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
             </div>
             <div className="flex gap-1 mt-1">
               {(["3m", "6m", "12m"] as const).map((range) => (
-                <Button key={range} variant={timeRange === range ? "default" : "ghost"} size="sm" className="h-6 px-2 text-xs" onClick={() => setTimeRange(range)} style={timeRange === range ? { backgroundColor: BRAND_BLUE } : {}}>
+                <Button key={range} variant={timeRange === range ? "default" : "ghost"} size="sm" className="h-6 px-2 text-xs" onClick={() => setTimeRange(range)} style={timeRange === range ? { backgroundColor: BRAND_DARK } : {}}>
                   {range}
                 </Button>
               ))}
@@ -101,24 +101,24 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
               <AreaChart data={filteredColisData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorColis" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={BRAND_BLUE} stopOpacity={0.8} />
-                    <stop offset="95%" stopColor={BRAND_BLUE} stopOpacity={0.1} />
+                    <stop offset="5%" stopColor={BRAND_DARK} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={BRAND_DARK} stopOpacity={0.1} />
                   </linearGradient>
                   <linearGradient id="colorMarge" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={BRAND_BLUE_LIGHT} stopOpacity={0.8} />
-                    <stop offset="95%" stopColor={BRAND_BLUE_LIGHT} stopOpacity={0.1} />
+                    <stop offset="5%" stopColor={BRAND_GRAY} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={BRAND_GRAY} stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#666" }} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#666" }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area yAxisId="left" type="monotone" dataKey="colis" stroke={BRAND_BLUE} fillOpacity={1} fill="url(#colorColis)" name="colis" />
-                <Area yAxisId="left" type="monotone" dataKey="marge" stroke={BRAND_BLUE_LIGHT} fillOpacity={0.5} fill="url(#colorMarge)" name="marge" />
+                <Area yAxisId="left" type="monotone" dataKey="colis" stroke={BRAND_DARK} fillOpacity={1} fill="url(#colorColis)" name="colis" />
+                <Area yAxisId="left" type="monotone" dataKey="marge" stroke={BRAND_GRAY} fillOpacity={0.5} fill="url(#colorMarge)" name="marge" />
               </AreaChart>
             </ChartContainer>
             <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <Package className="h-3 w-3" style={{ color: BRAND_BLUE }} /> {totalColis} colis • {avgMargePerColis.toLocaleString("fr-FR")} TND/colis
+              <Package className="h-3 w-3" style={{ color: BRAND_DARK }} /> {totalColis} colis • {avgMargePerColis.toLocaleString("fr-FR")} TND/colis
             </div>
           </CardContent>
         </Card>
@@ -131,9 +131,9 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
           <CardContent className="pt-0">
             <ChartContainer config={performanceConfig} className="h-[200px] w-full">
               <BarChart data={performanceData} layout="vertical" margin={{ left: 0, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
-                <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                <YAxis dataKey="metric" type="category" tickLine={false} axisLine={false} width={60} tick={{ fontSize: 10 }} />
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e5e5e5" />
+                <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#666" }} />
+                <YAxis dataKey="metric" type="category" tickLine={false} axisLine={false} width={60} tick={{ fontSize: 10, fill: "#666" }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -147,12 +147,12 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
             <CardTitle className="text-sm font-semibold">Vue Globale</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <ChartContainer config={{ A: { label: "Score", color: BRAND_BLUE } }} className="h-[200px] w-full">
+            <ChartContainer config={{ A: { label: "Score", color: BRAND_DARK } }} className="h-[200px] w-full">
               <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                <PolarGrid stroke="#e5e7eb" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: "#6b7280", fontSize: 9 }} />
+                <PolarGrid stroke="#d4d4d4" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: "#525252", fontSize: 9 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Performance" dataKey="A" stroke={BRAND_BLUE} fill={BRAND_BLUE} fillOpacity={0.3} strokeWidth={2} />
+                <Radar name="Performance" dataKey="A" stroke={BRAND_DARK} fill={BRAND_DARK} fillOpacity={0.2} strokeWidth={2} />
               </RadarChart>
             </ChartContainer>
           </CardContent>
@@ -184,7 +184,7 @@ function KpiCard({ title, value, subtitle, icon, trend, trendUp }: KpiCardProps)
               {subtitle && <span className="text-xs text-gray-400">{subtitle}</span>}
             </div>
             {trend && (
-              <div className={`flex items-center gap-0.5 mt-0.5 text-xs ${trendUp ? "text-blue-600" : "text-red-500"}`}>
+              <div className={`flex items-center gap-0.5 mt-0.5 text-xs ${trendUp ? "text-gray-700" : "text-red-500"}`}>
                 {trendUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               </div>
             )}
