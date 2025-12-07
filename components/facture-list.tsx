@@ -348,7 +348,6 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">N° Facture</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Client</th>
-              <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase"><Mail className="h-4 w-4 inline" /></th>
               <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
               <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase">Statut</th>
               <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase"><MoreHorizontal className="h-4 w-4 inline" /></th>
@@ -360,17 +359,15 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">{facture.numero}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">{formatDate(facture.date)}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{facture.clientName}</td>
-                <td className="px-4 py-3 text-center">
-                  {facture.clientEmail && (
-                    <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="text-blue-600 hover:text-blue-800">
-                      <Mail className="h-4 w-4 inline" />
-                    </a>
-                  )}
-                </td>
                 <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(facture.total)} TND</td>
                 <td className="px-4 py-3 text-center">{getStatusBadge(facture.status)}</td>
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-1">
+                    {facture.clientEmail && (
+                      <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors">
+                        <Mail className="h-4 w-4" />
+                      </a>
+                    )}
                     <Button variant="ghost" size="sm" onClick={() => downloadPDF(facture)} title="Télécharger PDF">
                       <Download className="h-4 w-4" />
                     </Button>
@@ -386,7 +383,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
             ))}
             {filteredFactures.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                   Aucune facture trouvée
                 </td>
               </tr>

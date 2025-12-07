@@ -348,7 +348,6 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">N° Devis</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Date</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Client</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase"><Mail className="h-4 w-4 inline" /></th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Total</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase">Statut</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase"><MoreHorizontal className="h-4 w-4 inline" /></th>
@@ -360,17 +359,15 @@ export function InvoiceList({ initialInvoices, initialStats, products, printJobs
                     <td className="px-4 py-3 font-mono font-medium">{invoice.numero}</td>
                     <td className="px-4 py-3 text-gray-600">{formatDate(invoice.date)}</td>
                     <td className="px-4 py-3 font-medium">{invoice.clientName}</td>
-                    <td className="px-4 py-3 text-center">
-                      {invoice.clientEmail && (
-                        <a href={`mailto:${invoice.clientEmail}`} title={invoice.clientEmail} className="text-blue-600 hover:text-blue-800">
-                          <Mail className="h-4 w-4 inline" />
-                        </a>
-                      )}
-                    </td>
                     <td className="px-4 py-3 text-right font-semibold whitespace-nowrap">{formatNumber(invoice.total)} TND</td>
                     <td className="px-4 py-3 text-center">{getStatusBadge(invoice.status)}</td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
+                        {invoice.clientEmail && (
+                          <a href={`mailto:${invoice.clientEmail}`} title={invoice.clientEmail} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors">
+                            <Mail className="h-4 w-4" />
+                          </a>
+                        )}
                         <button onClick={() => downloadPDF(invoice)} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors" title="Télécharger PDF">
                           <Download className="h-4 w-4" />
                         </button>

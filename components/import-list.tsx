@@ -413,8 +413,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                 <th className="px-4 py-3 text-left text-sm font-medium">Nom</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Entreprise</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Pays</th>
-                <th className="px-4 py-3 text-center text-sm font-medium"><Phone className="h-4 w-4 inline" /></th>
-                <th className="px-4 py-3 text-center text-sm font-medium"><Mail className="h-4 w-4 inline" /></th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Téléphone</th>
                 <th className="px-4 py-3 text-center text-sm font-medium"><MoreHorizontal className="h-4 w-4 inline" /></th>
               </tr>
             </thead>
@@ -424,21 +423,13 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
                   <td className="px-4 py-3 text-sm font-medium">{contact.nom}</td>
                   <td className="px-4 py-3 text-sm">{contact.entreprise || "-"}</td>
                   <td className="px-4 py-3 text-sm">{contact.pays || "-"}</td>
+                  <td className="px-4 py-3 text-sm">{contact.telephone || "-"}</td>
                   <td className="px-4 py-3 text-center">
-                    {contact.telephone ? (
-                      <a href={`tel:${contact.telephone}`} title={contact.telephone} className="text-blue-600 hover:text-blue-800">
-                        <Phone className="h-4 w-4 inline" />
+                    {contact.email && (
+                      <a href={`mailto:${contact.email}`} title={contact.email} className="text-blue-600 hover:text-blue-800 inline-block">
+                        <Mail className="h-4 w-4" />
                       </a>
-                    ) : "-"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {contact.email ? (
-                      <a href={`mailto:${contact.email}`} title={contact.email} className="text-blue-600 hover:text-blue-800">
-                        <Mail className="h-4 w-4 inline" />
-                      </a>
-                    ) : "-"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
+                    )}
                     <Button variant="ghost" size="icon" onClick={() => openEditContactForm(contact)} title="Modifier">
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -450,7 +441,7 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
               ))}
               {filteredContacts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                     Aucun contact trouvé
                   </td>
                 </tr>
