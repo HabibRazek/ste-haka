@@ -14,6 +14,24 @@ export type MonthlyColisData = {
   marge: number;
 };
 
+export type RecentFacture = {
+  id: string;
+  numero: string;
+  date: Date;
+  clientName: string;
+  total: number;
+  status: string;
+};
+
+export type RecentOrder = {
+  id: string;
+  date: Date;
+  designation: string;
+  client: string;
+  prixVente: number;
+  marge: number;
+};
+
 export type DashboardStats = {
   totalRevenue: number;
   totalExpenses: number;
@@ -34,6 +52,8 @@ export type DashboardStats = {
   colisMarge: number;
   revenueByCategory: { name: string; value: number }[];
   tasksByStatus: { name: string; value: number }[];
+  recentFactures: RecentFacture[];
+  recentOrders: RecentOrder[];
 };
 
 // Get monthly revenue and expenses for the current year
@@ -163,6 +183,36 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     { name: "En cours", value: totalTasks - completedTasks },
   ];
 
+  // Recent Factures (last 5)
+  const recentFacturesRaw = await prisma.facture.findMany({
+    orderBy: { date: "desc" },
+    take: 5,
+    select: { id: true, numero: true, date: true, clientName: true, total: true, status: true },
+  });
+  const recentFactures: RecentFacture[] = recentFacturesRaw.map(f => ({
+    id: f.id,
+    numero: f.numero,
+    date: f.date,
+    clientName: f.clientName,
+    total: f.total,
+    status: f.status,
+  }));
+
+  // Recent Orders (last 5)
+  const recentOrdersRaw = await prisma.order.findMany({
+    orderBy: { date: "desc" },
+    take: 5,
+    select: { id: true, date: true, designation: true, client: true, prixVente: true, prixAchat: true },
+  });
+  const recentOrders: RecentOrder[] = recentOrdersRaw.map(o => ({
+    id: o.id,
+    date: o.date,
+    designation: o.designation,
+    client: o.client,
+    prixVente: o.prixVente,
+    marge: Math.round((o.prixVente - o.prixAchat) * 1000) / 1000,
+  }));
+
   return {
     totalRevenue: Math.round(totalRevenue * 1000) / 1000,
     totalExpenses: Math.round(totalExpenses * 1000) / 1000,
@@ -183,6 +233,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     colisMarge: Math.round(colisMarge * 1000) / 1000,
     revenueByCategory,
     tasksByStatus,
+    recentFactures,
+    recentOrders,
   };
 }
 

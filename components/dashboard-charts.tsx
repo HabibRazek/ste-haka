@@ -158,8 +158,118 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Data Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Recent Factures */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold">📄 Factures Récentes</CardTitle>
+              <span className="text-xs text-muted-foreground">{stats.recentFactures.length} dernières</span>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">N°</th>
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">Date</th>
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">Client</th>
+                    <th className="px-2 py-2 text-right font-medium text-gray-500">Total</th>
+                    <th className="px-2 py-2 text-center font-medium text-gray-500">Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentFactures.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-2 py-6 text-center text-gray-400">Aucune facture</td>
+                    </tr>
+                  ) : (
+                    stats.recentFactures.map((facture) => (
+                      <tr key={facture.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="px-2 py-2 font-medium text-gray-900">{facture.numero}</td>
+                        <td className="px-2 py-2 text-gray-500">{formatDate(facture.date)}</td>
+                        <td className="px-2 py-2 text-gray-700 truncate max-w-[120px]">{facture.clientName}</td>
+                        <td className="px-2 py-2 text-right font-medium text-gray-900">{formatNumber(facture.total)} TND</td>
+                        <td className="px-2 py-2 text-center">
+                          <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                            facture.status === "PAID"
+                              ? "bg-green-100 text-green-700"
+                              : facture.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                          }`}>
+                            {facture.status === "PAID" ? "Payée" : facture.status === "PENDING" ? "En attente" : "Annulée"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Orders (Colis) */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold">📦 Colis Récents</CardTitle>
+              <span className="text-xs text-muted-foreground">{stats.recentOrders.length} derniers</span>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">Date</th>
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">Désignation</th>
+                    <th className="px-2 py-2 text-left font-medium text-gray-500">Client</th>
+                    <th className="px-2 py-2 text-right font-medium text-gray-500">Prix</th>
+                    <th className="px-2 py-2 text-right font-medium text-gray-500">Marge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-2 py-6 text-center text-gray-400">Aucun colis</td>
+                    </tr>
+                  ) : (
+                    stats.recentOrders.map((order) => (
+                      <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="px-2 py-2 text-gray-500">{formatDate(order.date)}</td>
+                        <td className="px-2 py-2 text-gray-700 truncate max-w-[120px]">{order.designation}</td>
+                        <td className="px-2 py-2 text-gray-700 truncate max-w-[100px]">{order.client}</td>
+                        <td className="px-2 py-2 text-right font-medium text-gray-900">{formatNumber(order.prixVente)} TND</td>
+                        <td className="px-2 py-2 text-right">
+                          <span className={`font-medium ${order.marge >= 0 ? "text-green-600" : "text-red-600"}`}>
+                            {order.marge >= 0 ? "+" : ""}{formatNumber(order.marge)} TND
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
+}
+
+// Helper functions
+function formatDate(date: Date): string {
+  return new Date(date).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function formatNumber(value: number): string {
+  return value.toLocaleString("fr-FR", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 }
 
 // KPI Card Component - Compact & Professional
