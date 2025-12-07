@@ -192,18 +192,21 @@ export function ProductList({ products: initialProducts }: ProductListProps) {
           value={formatNumber(stats.totalStock)}
           icon={<Boxes className="h-5 w-5" />}
           chartData={stats.stockData}
+          chartColor="#1a1a1a"
         />
         <KpiCard
           title="Valeur du Stock"
           value={`${formatNumber(stats.totalValeurStock)} TND`}
           icon={<DollarSign className="h-5 w-5" />}
           chartData={stats.valeurData}
+          chartColor="#4a4a4a"
         />
         <KpiCard
           title="Marge Potentielle"
           value={`${formatNumber(stats.totalMarge)} TND`}
           icon={<TrendingUp className="h-5 w-5" />}
           chartData={stats.margeData}
+          chartColor="#80a100"
         />
       </div>
 

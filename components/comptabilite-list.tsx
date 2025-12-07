@@ -426,18 +426,18 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border p-4 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg"><FileText className="h-5 w-5 text-blue-600" /></div>
+            <div className="p-2 rounded-lg" style={{ backgroundColor: "#c4f50015", color: "#80a100" }}><FileText className="h-5 w-5" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Documents</p>
               <p className="text-2xl font-bold">{stats.totalDocuments}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-4 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 rounded-lg"><AlertTriangle className="h-5 w-5 text-orange-600" /></div>
+            <div className="p-2 rounded-lg" style={{ backgroundColor: "#c4f50015", color: "#80a100" }}><AlertTriangle className="h-5 w-5" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Décl. En Attente</p>
               <p className="text-2xl font-bold">{stats.declarationsEnAttente}</p>
@@ -447,18 +447,18 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-4 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg"><TrendingUp className="h-5 w-5 text-green-600" /></div>
+            <div className="p-2 rounded-lg" style={{ backgroundColor: "#c4f50015", color: "#80a100" }}><TrendingUp className="h-5 w-5" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Chiffre d&apos;Affaires {stats.currentYear}</p>
               <p className="text-2xl font-bold">{formatNumber(stats.chiffreAffaires)} TND</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-4 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg"><Wallet className="h-5 w-5 text-red-600" /></div>
+            <div className="p-2 rounded-lg" style={{ backgroundColor: "#c4f50015", color: "#80a100" }}><Wallet className="h-5 w-5" /></div>
             <div>
               <p className="text-sm text-muted-foreground">TVA à Payer</p>
               <p className="text-2xl font-bold">{formatNumber(stats.tvaDue)} TND</p>
@@ -479,9 +479,10 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`flex items-center gap-2 px-4 py-2 font-medium whitespace-nowrap ${
-              activeTab === tab.id ? "border-b-2 border-primary text-primary" : "text-muted-foreground"
+            className={`flex items-center gap-2 px-4 py-2 font-medium whitespace-nowrap transition-colors ${
+              activeTab === tab.id ? "border-b-2 text-gray-900" : "text-muted-foreground hover:text-gray-700"
             }`}
+            style={activeTab === tab.id ? { borderColor: "#80a100" } : {}}
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
@@ -523,14 +524,14 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
       {activeTab === "dashboard" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* TVA Summary */}
-          <div className="bg-white rounded-lg border p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Calculator className="h-5 w-5" /> Situation TVA {stats.currentYear}
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b">
                 <span className="text-muted-foreground">TVA Collectée (19%)</span>
-                <span className="font-medium text-green-600">+{formatNumber(stats.tvaCollectee)} TND</span>
+                <span className="font-medium" style={{ color: "#80a100" }}>+{formatNumber(stats.tvaCollectee)} TND</span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-muted-foreground">TVA Déductible</span>
@@ -538,20 +539,20 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
               </div>
               <div className="flex justify-between py-2 font-bold text-lg">
                 <span>TVA à Payer</span>
-                <span className="text-primary">{formatNumber(stats.tvaDue)} TND</span>
+                <span style={{ color: "#1a1a1a" }}>{formatNumber(stats.tvaDue)} TND</span>
               </div>
             </div>
           </div>
 
           {/* Résultat Summary */}
-          <div className="bg-white rounded-lg border p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <TrendingUp className="h-5 w-5" /> Résultat {stats.currentYear}
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b">
                 <span className="text-muted-foreground">Chiffre d&apos;Affaires</span>
-                <span className="font-medium text-green-600">+{formatNumber(stats.chiffreAffaires)} TND</span>
+                <span className="font-medium" style={{ color: "#80a100" }}>+{formatNumber(stats.chiffreAffaires)} TND</span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-muted-foreground">Total Charges</span>
@@ -559,7 +560,7 @@ export function ComptabiliteList({ documents, declarations, charges, exercices, 
               </div>
               <div className="flex justify-between py-2 font-bold text-lg">
                 <span>Résultat Net</span>
-                <span className={stats.chiffreAffaires - stats.totalCharges >= 0 ? "text-green-600" : "text-red-600"}>
+                <span style={{ color: stats.chiffreAffaires - stats.totalCharges >= 0 ? "#80a100" : "#dc2626" }}>
                   {formatNumber(stats.chiffreAffaires - stats.totalCharges)} TND
                 </span>
               </div>

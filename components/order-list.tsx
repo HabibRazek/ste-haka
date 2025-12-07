@@ -182,18 +182,21 @@ export function OrderList({ orders: initialOrders }: OrderListProps) {
           value={`${formatNumber(stats?.totalVente || 0)} TND`}
           icon={<ShoppingCart className="h-5 w-5" />}
           chartData={stats?.ventesData}
+          chartColor="#1a1a1a"
         />
         <KpiCard
           title="Total Achats"
           value={`${formatNumber(stats?.totalAchat || 0)} TND`}
           icon={<DollarSign className="h-5 w-5" />}
           chartData={stats?.achatsData}
+          chartColor="#4a4a4a"
         />
         <KpiCard
           title="Marge Totale"
           value={`${formatNumber(stats?.totalMarge || 0)} TND`}
           icon={<TrendingUp className="h-5 w-5" />}
           chartData={stats?.margesData}
+          chartColor="#80a100"
         />
         <KpiCard
           title="% Marge Moyenne"
