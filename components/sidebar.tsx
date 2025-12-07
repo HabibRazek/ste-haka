@@ -141,9 +141,10 @@ export function Sidebar() {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                     isActive
-                      ? "bg-foreground text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-gray-100"
                   )}
+                  style={isActive ? { backgroundColor: "#1a1a1a" } : {}}
                 >
                   <item.icon className="h-5 w-5" />
                   {item.title}
@@ -164,9 +165,10 @@ export function Sidebar() {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                     isActive
-                      ? "bg-foreground text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-gray-100"
                   )}
+                  style={isActive ? { backgroundColor: "#1a1a1a" } : {}}
                 >
                   <item.icon className="h-5 w-5" />
                   {item.title}
