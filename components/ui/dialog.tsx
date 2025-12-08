@@ -16,7 +16,7 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        className="fixed inset-0 bg-foreground/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       <div className="relative z-50">{children}</div>
@@ -39,7 +39,7 @@ const DialogContent = React.forwardRef<
     {children}
     {onClose && (
       <button
-        className="absolute right-4 top-4 rounded-lg p-1 text-muted-foreground transition-colors hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+        className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-all hover:text-foreground hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/20"
         onClick={onClose}
       >
         <X className="h-4 w-4" />

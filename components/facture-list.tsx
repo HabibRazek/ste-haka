@@ -286,11 +286,26 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PAID":
-        return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Payé</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-green-50 text-green-700 border border-green-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            Payé
+          </span>
+        );
       case "PENDING":
-        return <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">En attente</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            En attente
+          </span>
+        );
       case "CANCELLED":
-        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Annulé</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-red-50 text-red-700 border border-red-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            Annulé
+          </span>
+        );
       default:
         return null;
     }
@@ -300,12 +315,12 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
   const total = sousTotal + timbre;
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Factures</h1>
-          <p className="text-gray-500">Gérez vos factures clients</p>
+          <p className="text-muted-foreground text-sm">Gérez vos factures clients</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportToExcel}>
@@ -343,27 +358,25 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
       </div>
 
       {/* Search */}
-      <div className="mb-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Rechercher par client ou numéro..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+      <div className="relative max-w-md">
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          placeholder="Rechercher par client ou numéro..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-11 h-11 rounded-xl border-gray-200 bg-white focus:border-green-500 focus:ring-green-500/20"
+        />
       </div>
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-3">
         {filteredFactures.length === 0 ? (
-          <div className="bg-white rounded-lg border p-8 text-center text-gray-500">
+          <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center text-gray-400">
             Aucune facture trouvée
           </div>
         ) : (
           filteredFactures.map((facture) => (
-            <div key={facture.id} className="bg-white rounded-lg border p-4 space-y-3">
+            <div key={facture.id} className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3 shadow-sm">
               {/* Header: Numero + Status */}
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-gray-900">{facture.numero}</span>
@@ -377,7 +390,7 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
               </div>
 
               {/* Total */}
-              <div className="flex items-center justify-between pt-2 border-t">
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                 <span className="text-sm text-gray-500">Total</span>
                 <span className="font-bold text-gray-900">{formatNumber(facture.total)} TND</span>
               </div>
@@ -405,49 +418,49 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-lg border overflow-hidden">
+      <div className="hidden md:block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50/80">
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">N° Facture</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Client</th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
-              <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase">Statut</th>
-              <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase"><MoreHorizontal className="h-4 w-4 inline" /></th>
+              <th className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">N° Facture</th>
+              <th className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
+              <th className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Client</th>
+              <th className="text-right px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
+              <th className="text-center px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Statut</th>
+              <th className="text-center px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-gray-100">
             {filteredFactures.map((facture) => (
-              <tr key={facture.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{facture.numero}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{formatDate(facture.date)}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{facture.clientName}</td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(facture.total)} TND</td>
-                <td className="px-4 py-3 text-center">{getStatusBadge(facture.status)}</td>
-                <td className="px-4 py-3 text-center">
-                  <div className="flex justify-center gap-1">
+              <tr key={facture.id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="px-5 py-4 text-sm font-semibold text-gray-900">{facture.numero}</td>
+                <td className="px-5 py-4 text-sm text-gray-500">{formatDate(facture.date)}</td>
+                <td className="px-5 py-4 text-sm text-gray-900">{facture.clientName}</td>
+                <td className="px-5 py-4 text-sm font-medium text-gray-900 text-right">{formatNumber(facture.total)} TND</td>
+                <td className="px-5 py-4 text-center">{getStatusBadge(facture.status)}</td>
+                <td className="px-5 py-4 text-center">
+                  <div className="flex justify-center gap-0.5">
                     {facture.clientEmail && (
-                      <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors">
+                      <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-all">
                         <Mail className="h-4 w-4" />
                       </a>
                     )}
-                    <Button variant="ghost" size="sm" onClick={() => downloadPDF(facture)} title="Télécharger PDF">
+                    <button onClick={() => downloadPDF(facture)} title="Télécharger PDF" className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-all">
                       <Download className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => openEditForm(facture)} title="Modifier">
+                    </button>
+                    <button onClick={() => openEditForm(facture)} title="Modifier" className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
                       <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => openDeleteDialog(facture)} title="Supprimer">
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                    </button>
+                    <button onClick={() => openDeleteDialog(facture)} title="Supprimer" className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
             {filteredFactures.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
                   Aucune facture trouvée
                 </td>
               </tr>

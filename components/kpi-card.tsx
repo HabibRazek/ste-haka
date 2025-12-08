@@ -4,10 +4,10 @@ import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
-// Theme colors
-const ACCENT_LIME = "#c4f500";
-const ACCENT_LIME_DARK = "#80a100";
-const BRAND_DARK = "#1a1a1a";
+// Theme colors - Dark Green Theme
+const PRIMARY_GREEN = "#166534";
+const PRIMARY_GREEN_LIGHT = "#dcfce7";
+const CHART_GREEN = "#22c55e";
 
 interface KpiCardProps {
   title: string;
@@ -24,42 +24,49 @@ export function KpiCard({
   icon,
   trend,
   chartData = [],
-  chartColor = BRAND_DARK,
+  chartColor = CHART_GREEN,
 }: KpiCardProps) {
   // Convert chartData array to recharts format
   const data = chartData.map((v, i) => ({ value: v, index: i }));
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4">
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-        <div
-          className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${ACCENT_LIME}15`, color: ACCENT_LIME_DARK }}
-        >
-          <div className="scale-75 sm:scale-100">{icon}</div>
-        </div>
-        <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-muted-foreground font-medium truncate">{title}</p>
-          <p className="text-sm sm:text-xl font-bold truncate text-gray-900">
+    <div className="bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-lg transition-all duration-300 p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
             {value}
           </p>
           {trend !== undefined && (
-            <div className="flex items-center gap-0.5 text-[10px] sm:text-xs" style={{ color: trend >= 0 ? ACCENT_LIME_DARK : "#dc2626" }}>
+            <div
+              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-medium"
+              style={{
+                backgroundColor: trend >= 0 ? PRIMARY_GREEN_LIGHT : "#fef2f2",
+                color: trend >= 0 ? PRIMARY_GREEN : "#dc2626"
+              }}
+            >
               {trend >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               <span>{trend >= 0 ? "+" : ""}{trend}%</span>
             </div>
           )}
         </div>
+
+        <div
+          className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: PRIMARY_GREEN_LIGHT, color: PRIMARY_GREEN }}
+        >
+          {icon}
+        </div>
       </div>
 
       {data.length > 0 && (
-        <div className="w-12 h-8 sm:w-20 sm:h-10 shrink-0 hidden xs:block sm:block">
+        <div className="w-full h-12 mt-3">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>
                 <linearGradient id={`gradient-${title.replace(/\s/g, "")}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={chartColor} stopOpacity={0.4} />
-                  <stop offset="100%" stopColor={chartColor} stopOpacity={0.05} />
+                  <stop offset="0%" stopColor={chartColor} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={chartColor} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <Area

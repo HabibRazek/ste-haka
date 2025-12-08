@@ -9,21 +9,23 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import type { DashboardStats } from "@/lib/actions/dashboard";
 
-// Dark theme colors
-const BRAND_DARK = "#1a1a1a";
-const BRAND_GRAY = "#4a4a4a";
+// Modern Green theme colors
+const PRIMARY_GREEN = "#166534";
+const PRIMARY_GREEN_LIGHT = "#22c55e";
+const SECONDARY_GRAY = "#64748b";
 
-// Accent lime colors
-const ACCENT_LIME = "#c4f500";
-const ACCENT_LIME_DARK = "#80a100";
+// Accent colors
+const ACCENT_GREEN = "#dcfce7";
+const CHART_GREEN_1 = "#166534";
+const CHART_GREEN_2 = "#22c55e";
 
 const colisConfig = {
-  colis: { label: "Nombre de Colis", color: BRAND_DARK },
-  marge: { label: "Marge (TND)", color: ACCENT_LIME_DARK },
+  colis: { label: "Nombre de Colis", color: PRIMARY_GREEN },
+  marge: { label: "Marge (TND)", color: CHART_GREEN_2 },
 } satisfies ChartConfig;
 
 const performanceConfig = {
-  value: { label: "Valeur", color: BRAND_DARK },
+  value: { label: "Valeur", color: PRIMARY_GREEN },
 } satisfies ChartConfig;
 
 interface DashboardChartsProps {
@@ -45,12 +47,12 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
   const trend = totalMarge > 0 ? "up" : "down";
   const avgMargePerColis = totalColis > 0 ? Math.round((totalMarge / totalColis) * 1000) / 1000 : 0;
 
-  // Performance data for bar chart - alternating dark and lime accent
+  // Performance data for bar chart - alternating green shades
   const performanceData = [
-    { metric: "Colis", value: stats.totalColis, fill: BRAND_DARK },
-    { metric: "Factures", value: stats.totalFactures, fill: ACCENT_LIME_DARK },
-    { metric: "Devis", value: stats.totalDevis, fill: BRAND_DARK },
-    { metric: "Produits", value: stats.totalProducts, fill: ACCENT_LIME_DARK },
+    { metric: "Colis", value: stats.totalColis, fill: PRIMARY_GREEN },
+    { metric: "Factures", value: stats.totalFactures, fill: CHART_GREEN_2 },
+    { metric: "Devis", value: stats.totalDevis, fill: PRIMARY_GREEN },
+    { metric: "Produits", value: stats.totalProducts, fill: CHART_GREEN_2 },
   ];
 
   // Radar data
@@ -95,7 +97,7 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
             </div>
             <div className="flex gap-1 mt-1">
               {(["3m", "6m", "12m"] as const).map((range) => (
-                <Button key={range} variant={timeRange === range ? "default" : "ghost"} size="sm" className="h-6 px-2 text-xs" onClick={() => setTimeRange(range)} style={timeRange === range ? { backgroundColor: BRAND_DARK, color: ACCENT_LIME } : {}}>
+                <Button key={range} variant={timeRange === range ? "default" : "ghost"} size="sm" className="h-6 px-2 text-xs" onClick={() => setTimeRange(range)} style={timeRange === range ? { backgroundColor: PRIMARY_GREEN } : {}}>
                   {range}
                 </Button>
               ))}
@@ -106,24 +108,24 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
               <AreaChart data={filteredColisData} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorColis" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={BRAND_DARK} stopOpacity={0.8} />
-                    <stop offset="95%" stopColor={BRAND_DARK} stopOpacity={0.1} />
+                    <stop offset="5%" stopColor={PRIMARY_GREEN} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={PRIMARY_GREEN} stopOpacity={0.1} />
                   </linearGradient>
                   <linearGradient id="colorMarge" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={ACCENT_LIME_DARK} stopOpacity={0.8} />
-                    <stop offset="95%" stopColor={ACCENT_LIME_DARK} stopOpacity={0.1} />
+                    <stop offset="5%" stopColor={CHART_GREEN_2} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={CHART_GREEN_2} stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#666" }} />
                 <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#666" }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area yAxisId="left" type="monotone" dataKey="colis" stroke={BRAND_DARK} fillOpacity={1} fill="url(#colorColis)" name="colis" />
-                <Area yAxisId="left" type="monotone" dataKey="marge" stroke={ACCENT_LIME_DARK} fillOpacity={0.5} fill="url(#colorMarge)" name="marge" />
+                <Area yAxisId="left" type="monotone" dataKey="colis" stroke={PRIMARY_GREEN} fillOpacity={1} fill="url(#colorColis)" name="colis" />
+                <Area yAxisId="left" type="monotone" dataKey="marge" stroke={CHART_GREEN_2} fillOpacity={0.5} fill="url(#colorMarge)" name="marge" />
               </AreaChart>
             </ChartContainer>
             <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <Package className="h-3 w-3" style={{ color: ACCENT_LIME_DARK }} /> {totalColis} colis • <span style={{ color: ACCENT_LIME_DARK }}>{avgMargePerColis.toLocaleString("fr-FR")} TND/colis</span>
+              <Package className="h-3 w-3" style={{ color: CHART_GREEN_2 }} /> {totalColis} colis • <span style={{ color: CHART_GREEN_2 }}>{avgMargePerColis.toLocaleString("fr-FR")} TND/colis</span>
             </div>
           </CardContent>
         </Card>
@@ -152,12 +154,12 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
             <CardTitle className="text-sm font-semibold">Vue Globale</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <ChartContainer config={{ A: { label: "Score", color: ACCENT_LIME_DARK } }} className="h-[200px] w-full">
+            <ChartContainer config={{ A: { label: "Score", color: CHART_GREEN_2 } }} className="h-[200px] w-full">
               <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
                 <PolarGrid stroke="#d4d4d4" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: "#525252", fontSize: 9 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Performance" dataKey="A" stroke={ACCENT_LIME_DARK} fill={ACCENT_LIME_DARK} fillOpacity={0.25} strokeWidth={2} />
+                <Radar name="Performance" dataKey="A" stroke={CHART_GREEN_2} fill={CHART_GREEN_2} fillOpacity={0.25} strokeWidth={2} />
               </RadarChart>
             </ChartContainer>
           </CardContent>
@@ -199,13 +201,14 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
                         <td className="px-2 py-2 text-gray-700 truncate max-w-[120px]">{facture.clientName}</td>
                         <td className="px-2 py-2 text-right font-medium text-gray-900">{formatNumber(facture.total)} TND</td>
                         <td className="px-2 py-2 text-center">
-                          <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
                             facture.status === "PAID"
-                              ? "text-white"
+                              ? "bg-green-50 text-green-700 border border-green-200"
                               : facture.status === "PENDING"
-                                ? "bg-gray-100 text-gray-700"
-                                : "bg-red-100 text-red-700"
-                          }`} style={facture.status === "PAID" ? { backgroundColor: ACCENT_LIME_DARK } : {}}>
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : "bg-red-50 text-red-700 border border-red-200"
+                          }`}>
+                            <span className={`w-1 h-1 rounded-full ${facture.status === "PAID" ? "bg-green-500" : facture.status === "PENDING" ? "bg-amber-500" : "bg-red-500"}`}></span>
                             {facture.status === "PAID" ? "Payée" : facture.status === "PENDING" ? "En attente" : "Annulée"}
                           </span>
                         </td>
@@ -251,7 +254,7 @@ export function DashboardCharts({ stats, onExportExcel }: DashboardChartsProps) 
                         <td className="px-2 py-2 text-gray-700 truncate max-w-[100px]">{order.client}</td>
                         <td className="px-2 py-2 text-right font-medium text-gray-900">{formatNumber(order.prixVente)} TND</td>
                         <td className="px-2 py-2 text-right">
-                          <span className="font-medium" style={{ color: order.marge >= 0 ? ACCENT_LIME_DARK : "#dc2626" }}>
+                          <span className={`font-medium ${order.marge >= 0 ? "text-green-600" : "text-red-600"}`}>
                             {order.marge >= 0 ? "+" : ""}{formatNumber(order.marge)} TND
                           </span>
                         </td>
@@ -289,22 +292,26 @@ interface KpiCardProps {
 
 function KpiCard({ title, value, subtitle, icon, trend, trendUp }: KpiCardProps) {
   return (
-    <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between">
+    <Card className="border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 rounded-2xl">
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-500 truncate">{title}</p>
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-lg font-bold text-gray-900 truncate">{value}</span>
+            <p className="text-xs font-medium text-gray-500 truncate mb-1">{title}</p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-bold text-gray-900 truncate">{value}</span>
               {subtitle && <span className="text-xs text-gray-400">{subtitle}</span>}
             </div>
             {trend && (
-              <div className="flex items-center gap-0.5 mt-0.5 text-xs" style={{ color: trendUp ? ACCENT_LIME_DARK : "#dc2626" }}>
+              <div className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-xs font-medium"
+                style={{
+                  backgroundColor: trendUp ? ACCENT_GREEN : "#fef2f2",
+                  color: trendUp ? PRIMARY_GREEN : "#dc2626"
+                }}>
                 {trendUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               </div>
             )}
           </div>
-          <div className="p-1.5 rounded-md ml-2" style={{ backgroundColor: `${ACCENT_LIME}15`, color: ACCENT_LIME_DARK }}>
+          <div className="p-2.5 rounded-xl ml-2" style={{ backgroundColor: ACCENT_GREEN, color: PRIMARY_GREEN }}>
             {icon}
           </div>
         </div>

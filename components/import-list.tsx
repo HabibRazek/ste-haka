@@ -333,16 +333,14 @@ export function ImportList({ initialContacts, initialProcedures, initialStats }:
       <div className="flex gap-2 border-b">
         <button
           onClick={() => setActiveTab("procedures")}
-          className={`px-4 py-2 font-medium transition-colors ${activeTab === "procedures" ? "border-b-2 text-gray-900" : "text-muted-foreground hover:text-gray-700"}`}
-          style={activeTab === "procedures" ? { borderColor: "#80a100" } : {}}
+          className={`px-4 py-2 font-medium transition-colors ${activeTab === "procedures" ? "border-b-2 border-green-600 text-gray-900" : "text-muted-foreground hover:text-gray-700"}`}
         >
           <Package className="inline-block w-4 h-4 mr-2" />
           Procédures d&apos;importation
         </button>
         <button
           onClick={() => setActiveTab("contacts")}
-          className={`px-4 py-2 font-medium transition-colors ${activeTab === "contacts" ? "border-b-2 text-gray-900" : "text-muted-foreground hover:text-gray-700"}`}
-          style={activeTab === "contacts" ? { borderColor: "#80a100" } : {}}
+          className={`px-4 py-2 font-medium transition-colors ${activeTab === "contacts" ? "border-b-2 border-green-600 text-gray-900" : "text-muted-foreground hover:text-gray-700"}`}
         >
           <Users className="inline-block w-4 h-4 mr-2" />
           Contacts
