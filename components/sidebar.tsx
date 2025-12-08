@@ -134,7 +134,7 @@ export function Sidebar() {
           {/* Logo - Only visible on desktop */}
           <div className="hidden lg:flex h-16 items-center border-b border-border/50 px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: "#1a1a1a" }}>
                 <span className="text-lg font-bold text-white">
                   H
                 </span>
