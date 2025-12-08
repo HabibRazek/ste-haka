@@ -355,8 +355,57 @@ export function FactureList({ initialFactures, initialStats, products, printJobs
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg border overflow-hidden">
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {filteredFactures.length === 0 ? (
+          <div className="bg-white rounded-lg border p-8 text-center text-gray-500">
+            Aucune facture trouvée
+          </div>
+        ) : (
+          filteredFactures.map((facture) => (
+            <div key={facture.id} className="bg-white rounded-lg border p-4 space-y-3">
+              {/* Header: Numero + Status */}
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-gray-900">{facture.numero}</span>
+                {getStatusBadge(facture.status)}
+              </div>
+
+              {/* Client & Date */}
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-gray-900">{facture.clientName}</p>
+                <p className="text-xs text-gray-500">{formatDate(facture.date)}</p>
+              </div>
+
+              {/* Total */}
+              <div className="flex items-center justify-between pt-2 border-t">
+                <span className="text-sm text-gray-500">Total</span>
+                <span className="font-bold text-gray-900">{formatNumber(facture.total)} TND</span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-1 pt-2 border-t">
+                {facture.clientEmail && (
+                  <a href={`mailto:${facture.clientEmail}`} title={facture.clientEmail} className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                    <Mail className="h-4 w-4" />
+                  </a>
+                )}
+                <Button variant="ghost" size="sm" onClick={() => downloadPDF(facture)} title="Télécharger PDF">
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => openEditForm(facture)} title="Modifier">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => openDeleteDialog(facture)} title="Supprimer">
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-white rounded-lg border overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
