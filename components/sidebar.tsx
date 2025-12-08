@@ -88,15 +88,28 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
+      {/* Mobile Top Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 lg:hidden">
+        <div className="flex h-14 items-center justify-between bg-white border-b border-border/50 px-4 shadow-sm">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: "#1a1a1a" }}>
+              <span className="text-sm font-bold text-white">H</span>
+            </div>
+            <span className="text-lg font-semibold tracking-tight text-foreground">Haka</span>
+          </Link>
+
+          {/* Burger Menu Button (Right Side) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
+      </div>
 
       {/* Overlay for mobile */}
       {isOpen && (
@@ -106,16 +119,20 @@ export function Sidebar() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Desktop: left side, Mobile: right side slide-in */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 transform bg-white border-r border-border/50 transition-transform duration-200 ease-in-out lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed z-40 h-screen w-64 transform bg-white transition-transform duration-200 ease-in-out",
+          // Desktop: left side, always visible
+          "lg:left-0 lg:top-0 lg:translate-x-0 lg:border-r lg:border-border/50",
+          // Mobile: right side, slides from right, starts below navbar
+          "max-lg:right-0 max-lg:top-14 max-lg:h-[calc(100vh-3.5rem)] max-lg:border-l max-lg:border-border/50 max-lg:shadow-xl",
+          isOpen ? "max-lg:translate-x-0" : "max-lg:translate-x-full"
         )}
       >
         <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="flex h-16 items-center border-b border-border/50 px-6">
+          {/* Logo - Only visible on desktop */}
+          <div className="hidden lg:flex h-16 items-center border-b border-border/50 px-6">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground">
                 <span className="text-lg font-bold text-white">

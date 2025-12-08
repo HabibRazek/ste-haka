@@ -30,7 +30,8 @@ export default function RootLayout({
       >
         <Sidebar />
         <main className="lg:ml-64 min-h-screen overflow-x-hidden">
-          <div className="w-full max-w-full px-4 py-8 lg:px-8 pt-16 lg:pt-8">
+          {/* Mobile: pt-18 (navbar h-14 + py-4), Desktop: pt-8 */}
+          <div className="w-full max-w-full px-4 py-4 lg:px-8 pt-18 lg:pt-8">
             {children}
           </div>
         </main>
